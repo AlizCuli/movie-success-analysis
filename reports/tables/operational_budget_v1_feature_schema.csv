@@ -1,0 +1,8 @@
+feature,formula,empty_history_fallback,scope,reference_rule,uses_target
+budget_prior_percentile,(count(prior_log_budget <= current)+0.5)/(prior_count+1),0.5,pre_release_operational,fitted training rows with release_date < query release_date,False
+log_budget_minus_prior_median,current_log_budget - median(all prior log_budget),0.0,pre_release_operational,fitted training rows with release_date < query release_date,False
+log_prior_budget_count,log1p(count(all prior valid budgets)),0.0,pre_release_operational,fitted training rows with release_date < query release_date,False
+log_budget_minus_prior_3y_median,current_log_budget - median(prior 3-year log_budget),0.0,pre_release_operational,fitted training rows with release_date < query release_date,False
+log_prior_budget_3y_count,log1p(count(prior valid budgets in 3 years)),0.0,pre_release_operational,fitted training rows with release_date < query release_date,False
+budget_history_available,1 if all-history budget reference is non-empty,0.0,pre_release_operational,fitted training rows with release_date < query release_date,False
+budget_history_3y_available,1 if 3-year budget reference is non-empty,0.0,pre_release_operational,fitted training rows with release_date < query release_date,False

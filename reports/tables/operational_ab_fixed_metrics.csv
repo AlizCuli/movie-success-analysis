@@ -1,0 +1,2 @@
+model,scope,rows,macro_f1,f1_class_0,recall_class_0,balanced_accuracy,accuracy
+xgboost_operational_a_b_fixed,pre_release_operational,1646,0.710977316446319,0.5971943887775552,0.6247379454926625,0.7169883055093766,0.755771567436209

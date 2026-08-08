@@ -1,0 +1,7 @@
+{
+  "manifest_exists": true,
+  "history_movies": 134254,
+  "coverage_rows": 15,
+  "target_id_leakage_rows": 0,
+  "distributor_status": "blocked_pending_provenance_and_coverage_pilot"
+}

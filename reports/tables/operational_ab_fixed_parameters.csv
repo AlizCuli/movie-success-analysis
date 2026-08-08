@@ -1,0 +1,6 @@
+outer_fold,selected_iterations,inner_oof_threshold,inner_oof_macro_f1,raw_feature_count,transformed_feature_count,n_estimators,learning_rate,max_depth,min_child_weight,subsample,colsample_bytree,gamma,reg_alpha,reg_lambda,class_weight_0,min_frequency
+1,112,0.58,0.7088800045047582,47,148,800,0.064,4,12,0.68,0.88,1.6,0.14,0.93,1.5,10
+2,129,0.55,0.7076185834957764,47,142,800,0.064,4,12,0.68,0.88,1.6,0.14,0.93,1.5,10
+3,111,0.52,0.7159789740821336,47,139,800,0.064,4,12,0.68,0.88,1.6,0.14,0.93,1.5,10
+4,106,0.52,0.707260148370426,46,145,800,0.064,4,12,0.68,0.88,1.6,0.14,0.93,1.5,10
+5,115,0.58,0.7171769755646109,47,144,800,0.064,4,12,0.68,0.88,1.6,0.14,0.93,1.5,10

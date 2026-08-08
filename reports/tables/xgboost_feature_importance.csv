@@ -1,0 +1,161 @@
+feature,importance
+categorical__collection_id___MISSING__,0.081906475
+numeric__is_collection,0.048606917
+numeric__genre_flag_adventure,0.029059255
+numeric__genre_flag_action,0.029002056
+categorical__certification_infrequent_sklearn,0.028248549
+numeric__theatrical_country_count,0.027423427
+categorical__primary_country_infrequent_sklearn,0.025879508
+numeric__genre_flag_drama,0.02456991
+categorical__release_decade_2010,0.02410999
+categorical__primary_genre_Comedy,0.022770757
+numeric__production_country_count,0.020928714
+numeric__collection_years_since_previous,0.019077115
+numeric__release_year,0.017683418
+numeric__log_budget,0.017373424
+categorical__primary_country_France,0.017022155
+numeric__collection_prior_mean_log_budget,0.016981838
+numeric__release_event_count,0.0167155
+numeric__genre_flag_romance,0.01664896
+numeric__genre_count,0.01656121
+categorical__primary_genre_Science Fiction,0.0155494
+categorical__release_decade_2020,0.015524799
+categorical__primary_country_Canada,0.015446515
+categorical__certification_PG-13,0.015298874
+numeric__cast_count,0.015204469
+categorical__certification_R,0.014873732
+categorical__release_season_Q4,0.014116194
+numeric__production_company_count,0.013928167
+categorical__release_month_9,0.013880479
+categorical__release_season_Q1,0.013651023
+numeric__keyword_count,0.013588887
+categorical__release_month_7,0.013313794
+categorical__release_month_10,0.0132046975
+numeric__collection_prior_success_rate,0.013183201
+categorical__certification_PG,0.01315503
+numeric__genre_flag_fantasy,0.012708735
+numeric__genre_flag_science_fiction,0.012252788
+numeric__genre_flag_family,0.0121533405
+categorical__primary_country_United States of America,0.012146142
+numeric__runtime,0.01205423
+numeric__genre_flag_comedy,0.0118527245
+categorical__primary_company_id_infrequent_sklearn,0.01182145
+numeric__is_us_production,0.011777275
+categorical__release_month_4,0.011774669
+categorical__release_month_12,0.011655712
+categorical__release_season_Q2,0.011585651
+numeric__overview_word_count,0.011391648
+numeric__company_count,0.011300951
+numeric__genre_flag_thriller,0.011201544
+categorical__primary_genre_Horror,0.010926204
+categorical__primary_company_infrequent_sklearn,0.010911695
+numeric__crew_count,0.010868682
+numeric__genre_flag_horror,0.010845156
+numeric__spoken_language_count,0.01006086
+numeric__genre_flag_mystery,0.009864617
+categorical__primary_genre_Action,0.009804348
+numeric__is_english,0.009192757
+categorical__release_decade_2000,0.008595497
+categorical__primary_country_United Kingdom,0.008253983
+categorical__release_season_Q3,0.007610264
+categorical__release_month_2,0.0065293126
+categorical__original_language_en,0.00637133
+numeric__genre_flag_crime,0.0
+numeric__genre_flag_animation,0.0
+numeric__genre_flag_history,0.0
+numeric__genre_flag_western,0.0
+numeric__genre_flag_music,0.0
+numeric__genre_flag_tv_movie,0.0
+numeric__genre_flag_war,0.0
+numeric__genre_flag_documentary,0.0
+categorical__primary_genre_Mystery,0.0
+categorical__primary_genre_Romance,0.0
+categorical__primary_genre_infrequent_sklearn,0.0
+categorical__original_language_ja,0.0
+categorical__original_language_fr,0.0
+categorical__original_language_ko,0.0
+categorical__original_language_zh,0.0
+categorical__primary_country_Australia,0.0
+categorical__original_language_es,0.0
+categorical__primary_genre_War,0.0
+categorical__primary_genre_Thriller,0.0
+categorical__primary_country_Germany,0.0
+categorical__primary_country_China,0.0
+categorical__primary_genre_Fantasy,0.0
+categorical__primary_genre_Family,0.0
+categorical__primary_genre_Crime,0.0
+categorical__primary_genre_Drama,0.0
+categorical__primary_genre_Adventure,0.0
+categorical__release_month_3,0.0
+categorical__primary_genre_Animation,0.0
+categorical__release_month_11,0.0
+categorical__release_month_1,0.0
+numeric__collection_prior_movie_count,0.0
+numeric__has_tagline,0.0
+categorical__release_month_6,0.0
+categorical__release_month_8,0.0
+categorical__release_month_5,0.0
+categorical__primary_company_DreamWorks Animation,0.0
+categorical__primary_company_Dimension Films,0.0
+categorical__primary_company_Columbia Pictures,0.0
+categorical__primary_company_Blumhouse Productions,0.0
+categorical__primary_company_Blue Sky Studios,0.0
+categorical__primary_company_A24,0.0
+categorical__primary_company_20th Century Fox,0.0
+categorical__primary_country_South Korea,0.0
+categorical__primary_country_India,0.0
+categorical__primary_country_Spain,0.0
+categorical__primary_country_Japan,0.0
+categorical__primary_country_New Zealand,0.0
+categorical__primary_country_Hong Kong,0.0
+categorical__original_language_infrequent_sklearn,0.0
+categorical__primary_company_Fox 2000 Pictures,0.0
+categorical__primary_company_DreamWorks Pictures,0.0
+categorical__primary_company_Village Roadshow Pictures,0.0
+categorical__primary_company_Universal Pictures,0.0
+categorical__primary_company_Touchstone Pictures,0.0
+categorical__primary_company_Summit Entertainment,0.0
+categorical__primary_company_Pixar,0.0
+categorical__primary_company_Paramount Pictures,0.0
+categorical__primary_company_Original Film,0.0
+categorical__primary_company_New Line Cinema,0.0
+categorical__primary_company_Miramax,0.0
+categorical__primary_company_Walt Disney Pictures,0.0
+categorical__primary_company_Warner Bros. Pictures,0.0
+categorical__primary_company_EuropaCorp,0.0
+categorical__primary_company_Lionsgate,0.0
+categorical__primary_company_Marvel Studios,0.0
+categorical__primary_company_Metro-Goldwyn-Mayer,0.0
+categorical__primary_company_Legendary Pictures,0.0
+categorical__primary_company_id_1632.0,0.0
+categorical__primary_company_id_14.0,0.0
+categorical__primary_company_id_12.0,0.0
+categorical__collection_id_infrequent_sklearn,0.0
+categorical__primary_company_Walt Disney Animation Studios,0.0
+categorical__primary_company_id_174.0,0.0
+categorical__primary_company_id_21.0,0.0
+categorical__primary_company_id_2.0,0.0
+categorical__primary_company_id_4.0,0.0
+categorical__primary_company_id_41077.0,0.0
+categorical__primary_company_id_420.0,0.0
+categorical__primary_company_id_25.0,0.0
+categorical__primary_company_id_3.0,0.0
+categorical__primary_company_id_3172.0,0.0
+categorical__primary_company_id_33.0,0.0
+categorical__primary_company_id_333.0,0.0
+categorical__primary_company_id_6896.0,0.0
+categorical__primary_company_id_6125.0,0.0
+categorical__primary_company_id_521.0,0.0
+categorical__primary_company_id_5.0,0.0
+categorical__primary_company_id_491.0,0.0
+categorical__primary_company_id_7.0,0.0
+categorical__primary_company_id_7405.0,0.0
+categorical__primary_company_id_711.0,0.0
+categorical__primary_company_id_9383.0,0.0
+categorical__primary_company_id_923.0,0.0
+categorical__primary_company_id_9195.0,0.0
+categorical__primary_company_id_79.0,0.0
+categorical__certification_NR,0.0
+categorical__certification_M,0.0
+categorical__certification_G,0.0
+categorical__certification_16,0.0

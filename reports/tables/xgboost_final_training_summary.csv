@@ -1,0 +1,2 @@
+artifact,training_rows,selected_n_estimators,threshold,inner_oof_macro_f1,benchmark_outer_oof_macro_f1,raw_feature_count,transformed_feature_count
+xgboost_pre_release_operational,1646,144,0.51,0.7054966963589658,0.7194825315671237,51,160

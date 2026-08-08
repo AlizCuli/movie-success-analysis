@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "snapshot_version": "tmdb-2026-08-05-v1",
+  "release_date_max": "2025-12-31",
+  "maturity_lag_days": 365,
+  "top_cast_k": 5,
+  "success_smoothing": 10.0,
+  "recent_movie_count": 3,
+  "recency_half_life_years": 3.0,
+  "requests_per_second": 24.0,
+  "movie_detail_workers": 24,
+  "timeout_seconds": 30,
+  "max_retries": 5,
+  "source": "TMDb Official API",
+  "forbidden_predictors": [
+    "popularity",
+    "vote_count",
+    "vote_average",
+    "imdb_rating",
+    "imdb_vote_count",
+    "profit",
+    "roi",
+    "revenue_to_budget"
+  ],
+  "excluded_operational_budget_v1_features": [
+    "budget_prior_percentile",
+    "log_budget_minus_prior_median",
+    "log_prior_budget_count",
+    "log_budget_minus_prior_3y_median",
+    "log_prior_budget_3y_count",
+    "budget_history_available",
+    "budget_history_3y_available"
+  ]
+}

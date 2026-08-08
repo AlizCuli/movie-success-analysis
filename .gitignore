@@ -1,0 +1,27 @@
+.venv/
+.idea/
+__pycache__/
+*.pyc
+.env
+
+# Dữ liệu chỉ được giữ local và không phân phối qua repository public.
+# Chỉ giữ README và .gitkeep để mô tả cấu trúc thư mục.
+data/raw/*
+!data/raw/.gitkeep
+data/external/*
+!data/external/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Bỏ qua model thử nghiệm; chỉ cho phép gói XGBoost chính thức.
+models/*.joblib
+models/*.cbm
+models/*.json
+models/*.db
+models/*.log
+models/*.pid
+!models/xgboost_pre_release_operational_bundle.joblib
+!models/xgboost_pre_release_operational_model.json
+!models/xgboost_pre_release_operational_manifest.json

@@ -1,0 +1,9 @@
+phase,started_at_utc,finished_at_utc,request_count,status,snapshot_version
+people,2026-08-05T17:21:28.222914+00:00,2026-08-05T17:31:53.793459+00:00,1359,completed,tmdb-2026-08-05-v1
+companies,2026-08-05T17:32:49.626857+00:00,2026-08-05T17:33:39.978607+00:00,100,request_budget_reached_checkpoint_saved,tmdb-2026-08-05-v1
+companies,2026-08-05T17:34:24.266195+00:00,2026-08-05T18:35:47.766189+00:00,6317,failed_checkpoint_preserved,tmdb-2026-08-05-v1
+companies,2026-08-05T18:36:49.170756+00:00,2026-08-05T18:39:19.129715+00:00,248,completed,tmdb-2026-08-05-v1
+movies,2026-08-05T18:41:10.857971+00:00,2026-08-05T18:41:26.478652+00:00,100,request_budget_reached_checkpoint_saved,tmdb-2026-08-05-v1
+movies,2026-08-05T18:44:52.043111+00:00,2026-08-05T18:45:06.900741+00:00,200,request_budget_reached_checkpoint_saved,tmdb-2026-08-05-v1
+movies,2026-08-05T18:45:42.458497+00:00,2026-08-05T18:45:57.697926+00:00,300,request_budget_reached_checkpoint_saved,tmdb-2026-08-05-v1
+movies,2026-08-06T03:22:28.052294+00:00,2026-08-06T03:57:02.919992+00:00,47143,completed,tmdb-2026-08-05-v1
