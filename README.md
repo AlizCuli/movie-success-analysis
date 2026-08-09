@@ -66,10 +66,10 @@ ra được trình bày tại
 ```text
 movie-success-analysis/
 ├── .github/workflows/        # Kiểm tra tự động khi cập nhật mã nguồn
-├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật bị Git bỏ qua
+├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật được ẩn
 ├── docs/                     # Phương pháp, quyết định và kết quả nghiên cứu
 ├── models/                   # Gói XGBoost chính thức, manifest và checksum
-├── notebooks/                # Notebook EDA tái lập được
+├── notebooks/                # Notebook EDA có thể tái lập
 ├── reports/
 │   ├── figures/              # Hình tổng hợp dùng trong báo cáo
 │   └── tables/               # Bảng chỉ số tổng hợp, không chứa dữ liệu từng phim
