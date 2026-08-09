@@ -87,9 +87,7 @@ flowchart LR
     A["TMDb Official API"] --> B["Thu thập 2000–2025"]
     B --> C["Tiền xử lý TMDb"]
     C --> E["EDA và kiểm tra chất lượng"]
-    D --> E
     C --> F["Đặc trưng trước phát hành"]
-    D --> F
     F --> G["Nested CV 5×4"]
     G --> H["Bảng và hình tổng hợp"]
     F --> I["Đóng gói XGBoost cuối"]
