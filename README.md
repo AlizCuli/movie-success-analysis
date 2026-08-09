@@ -86,7 +86,6 @@ movie-success-analysis/
 flowchart LR
     A["TMDb Official API"] --> B["Thu thập 2000–2025"]
     B --> C["Tiền xử lý TMDb"]
-    B --> D["Thu thập siêu dữ liệu bổ sung"]
     C --> E["EDA và kiểm tra chất lượng"]
     D --> E
     C --> F["Đặc trưng trước phát hành"]
