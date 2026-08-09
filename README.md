@@ -84,13 +84,13 @@ movie-success-analysis/
 
 ```mermaid
 flowchart LR
-    A["TMDb Official API"] --> B["Thu thập 2000–2025"]
-    B --> C["Tiền xử lý TMDb"]
-    C --> E["EDA và kiểm tra chất lượng"]
-    C --> F["Đặc trưng trước phát hành"]
-    F --> G["Nested CV 5×4"]
-    G --> H["Bảng và hình tổng hợp"]
-    F --> I["Đóng gói XGBoost cuối"]
+    A["TMDb Official API"] --> B["Thu thập API"]
+    B --> C["Dữ liệu gốc"]
+    C --> E["Tiền xử lý"]
+    C --> F["EDA và đặc trưng"]
+    F --> G["Tập phân tích"]
+    G --> H["XGBoost"]
+    F --> I["Đánh giá và đóng gói"]
 ```
 
 Bộ điền khuyết, bộ mã hóa, từ vựng, trạng thái đặc trưng lịch sử, số vòng
