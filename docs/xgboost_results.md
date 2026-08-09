@@ -1,42 +1,48 @@
 # Kết quả XGBoost pre-release operational
 
-## Benchmark
+## Benchmark ngoài mẫu
 
-Benchmark chính thức được đánh giá bằng nested Stratified CV 5 outer fold × 4
-inner fold trên 1.646 phim. Pooled outer-OOF:
+Benchmark được đánh giá bằng nested Stratified CV 5 outer × 4 inner fold trên
+1.646 phim. Kết quả pooled outer-OOF:
 
 | Chỉ số | Giá trị |
 | --- | ---: |
 | Macro-F1 | **0,719483** |
 | F1 lớp 0 | 0,605128 |
+| F1 lớp 1 | 0,833837 |
 | Recall lớp 0 | 0,618449 |
+| Recall lớp 1 | 0,826347 |
 | Balanced accuracy | 0,722398 |
+| Accuracy | 0,766100 |
 
-Tập kiểm định outer không tham gia chọn đặc trưng, tiền xử lý, ngưỡng phân loại
-hoặc số vòng lặp. Các dự đoán dùng để tính metric nằm tại
-`reports/tables/operational_franchise_oof_predictions.csv`.
+Outer folds không tham gia chọn feature, preprocessing, số vòng boosting hoặc
+threshold. Dự đoán cấp từng phim được giữ local; repository chỉ công khai bảng
+tổng hợp.
 
-## Tệp kết quả phục vụ báo cáo
+## Artifact báo cáo
 
 - `xgboost_fold_metrics.csv`: độ ổn định giữa năm outer fold.
-- `xgboost_confusion_matrix.csv`: số dự đoán đúng/sai từng lớp.
-- `xgboost_error_analysis.csv`: false positive, false negative và khoảng cách
-  tới ngưỡng `revenue_to_budget = 2`.
-- `xgboost_feature_importance.csv`: độ quan trọng của đặc trưng từ mô hình cuối;
-  chỉ dùng để diễn giải mô hình, không phải độ quan trọng ở từng outer fold.
-- Hình `09`–`12` trong `reports/figures/` minh họa các kết quả trên.
+- `xgboost_confusion_matrix.csv`: ma trận nhầm lẫn tổng hợp.
+- `xgboost_pooled_metrics.csv`: metric pooled outer-OOF.
+- `xgboost_feature_importance.csv`: importance của model fit cuối, dùng để diễn
+  giải model chứ không thay thế permutation/SHAP ngoài mẫu.
+- Ba hình cùng tên trong `reports/figures/`: confusion matrix, Macro-F1 theo
+  fold và top feature importance.
 
-## Mô hình đóng gói
+## Model đóng gói
 
-Mô hình trong `models/` được huấn luyện trên toàn bộ 1.646 phim sau khi cấu hình
-đã được khóa. Ngưỡng và số vòng cuối được chọn bằng OOF 4 fold trên toàn bộ dữ
-liệu huấn luyện, không tinh chỉnh lại siêu tham số. Vì mô hình đã thấy toàn bộ
-dữ liệu, điểm trên tập huấn luyện không được xem là hiệu năng tổng quát hóa.
-Hiệu năng chính thức vẫn là Macro-F1 outer-OOF `0,719483`.
+Model trong `models/` được fit trên toàn bộ 1.646 phim sau khi cấu hình đã khóa:
+144 boosting rounds và threshold 0,51. Vì model này đã thấy toàn bộ tập dữ liệu,
+không sử dụng điểm fit của nó để báo cáo khả năng tổng quát hóa; benchmark chính
+thức vẫn là kết quả nested outer-OOF ở trên.
 
-## Giới hạn
+## Diễn giải và giới hạn
 
-- Lớp không thành công chỉ chiếm 28,98%, khiến F1 lớp 0 thấp hơn lớp 1.
-- Nhãn gần ngưỡng `revenue_to_budget = 2` có tính mơ hồ cao.
-- Metadata TMDb là snapshot hiện tại, không phải archive point-in-time.
-- Mẫu tối đa 100 phim phổ biến mỗi năm không đại diện cho toàn bộ thị trường.
+- Model nhận diện lớp thành công tốt hơn lớp không thành công; F1 lớp 0 còn là
+  giới hạn chính.
+- Franchise history cải thiện Macro-F1 so với A+B cố định từ 0,710977 lên
+  0,719483, nhưng chênh lệch nhỏ và cần được diễn giải thận trọng.
+- Kết quả chịu ảnh hưởng bởi chiến lược lấy tối đa 100 phim phổ biến mỗi năm,
+  dữ liệu tài chính thiếu và tính chất snapshot của TMDb.
+- Macro-F1 0,719483 cho thấy metadata trước phát hành chứa tín hiệu dự báo có
+  ích, nhưng chưa đủ cho quyết định tài chính có rủi ro cao nếu dùng độc lập.

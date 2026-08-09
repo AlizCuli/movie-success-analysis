@@ -1,59 +1,57 @@
-# Quyết định tiền xử lý dữ liệu phim
+# Quyết định tiền xử lý
 
 ## Phạm vi
 
-Nguồn dữ liệu chính thức của báo cáo và mô hình cuối chỉ là TMDb Official API.
-Các trường IMDb của pipeline khảo sát cũ không được dùng trong EDA chính, tập
-biến dự báo hoặc báo cáo cuối.
+Đầu vào duy nhất là CSV cấu trúc hóa từ TMDb:
+`data/interim/tmdb_movies_2000_2025.csv`. File nguồn không bị chỉnh sửa.
 
-## Giá trị không hợp lệ và dữ liệu thiếu
+## Giá trị thiếu và không hợp lệ
 
-- `budget`, `revenue` và `runtime` nhỏ hơn hoặc bằng 0 được chuyển thành giá trị
-  thiếu trong dữ liệu dẫn xuất. Đối với ngân sách và doanh thu, giá trị 0 thường
-  phản ánh việc chưa công bố hơn là giá trị thực bằng 0.
-- Chuỗi rỗng và ký hiệu `\N` được xem là giá trị thiếu.
-- Không điền trung bình hoặc trung vị trực tiếp vào bộ dữ liệu đã xử lý. Việc
-  điền thiếu dùng cho mô hình được thực hiện trong pipeline và chỉ học từ phần
-  dữ liệu huấn luyện của từng fold.
-- Không loại một phim chỉ vì thiếu biến không bắt buộc đối với mô hình.
+- Chuỗi rỗng và `\N` được chuyển thành giá trị thiếu.
+- `budget <= 0`, `revenue <= 0` và `runtime <= 0` được xem là chưa công bố hoặc
+  không hợp lệ và chuyển thành thiếu.
+- Rating ngoài 0–10 được làm thiếu để giữ tính hợp lệ của dữ liệu thô, nhưng
+  rating không tham gia EDA chính hoặc model cuối.
+- Không điền trung bình/trung vị trực tiếp vào CSV đã xử lý.
+- Với predictor còn thiếu, imputer nằm trong pipeline và chỉ học từ training
+  partition của từng fold.
+
+`movies_cleaned.csv` giữ toàn bộ 2.597 phim. `movies_modeling.csv` chỉ giữ phim
+có budget, revenue, runtime, release date và target hợp lệ; các predictor khác
+có thể còn thiếu để được xử lý trong pipeline.
+
+## Đặc trưng phục vụ EDA
+
+- Thời gian: `release_year`, `release_month`, `release_quarter`.
+- Tài chính mô tả: `profit`, `revenue_to_budget`, `roi`, `log_budget`,
+  `log_revenue`.
+- Danh mục: `genre_count`, `primary_genre`, `production_country_count`,
+  `primary_country`, `production_company_count`.
+- Cờ chất lượng: `budget_available`, `revenue_available`, `budget_outlier`,
+  `revenue_outlier`.
+
+Các trường tài chính hậu phát hành chỉ phục vụ tạo nhãn hoặc mô tả dữ liệu,
+không đi vào predictor.
 
 ## Ngoại lai
 
-Hai cờ `budget_outlier` và `revenue_outlier` được xác định bằng quy tắc IQR:
-nhỏ hơn `Q1 - 1,5 × IQR` hoặc lớn hơn `Q3 + 1,5 × IQR`. Ngoại lai chỉ được đánh
-dấu, không bị xóa hoặc thay thế, vì chúng có thể đại diện cho phim có quy mô tài
-chính thực sự khác biệt.
+`budget_outlier` và `revenue_outlier` dùng quy tắc IQR: ngoài khoảng
+`[Q1 - 1,5 × IQR; Q3 + 1,5 × IQR]`. Ngoại lai chỉ được đánh dấu, không xóa,
+vì có thể là các phim có quy mô thực sự khác biệt.
 
-## Đặc trưng dẫn xuất phục vụ phân tích
+## Target
 
-- Thời gian: `release_year`, `release_month`, `release_quarter`.
-- Tài chính: `profit`, `revenue_to_budget`, `roi`, `log_budget`, `log_revenue`.
-- Phản hồi TMDb: `log_popularity`, `log_vote_count`.
-- Danh mục: `genre_count`, `primary_genre`, `production_country_count`,
-  `primary_country`, `production_company_count`.
-- Cờ dữ liệu: `budget_available`, `revenue_available`, `budget_outlier`,
-  `revenue_outlier`.
-
-Các đặc trưng hậu phát hành trong danh sách trên chỉ phục vụ mô tả hoặc tạo
-nhãn; chúng không được dùng làm đầu vào của mô hình dự đoán trước phát hành.
-
-## Định nghĩa biến mục tiêu
-
-Với phim có ngân sách và doanh thu hợp lệ:
+Với phim có budget và revenue hợp lệ:
 
 ```text
-is_successful = 1 nếu revenue_to_budget >= 2
-is_successful = 0 nếu revenue_to_budget < 2
+is_successful = 1 nếu revenue >= 2 × budget
+is_successful = 0 nếu revenue < 2 × budget
 ```
 
-Không tính nhãn khi thiếu ngân sách hoặc doanh thu. Đây là định nghĩa vận hành
-đơn giản, chưa phản ánh chi phí marketing, phần doanh thu giữ lại của rạp, lạm
-phát hoặc các nguồn thu ngoài phòng vé.
+Đây là chuẩn thành công tài chính được quy ước trong phạm vi project.
 
-## Kiểm soát rò rỉ mục tiêu
+## Chống rò rỉ target
 
-Trong mô hình phân loại, `revenue`, `log_revenue`, `profit`, `roi` và
-`revenue_to_budget` không được dùng làm biến đầu vào vì trực tiếp chứa hoặc
-được suy ra từ kết quả tài chính sau phát hành. `is_successful` chỉ được dùng
-làm biến mục tiêu. Các biến `popularity`, điểm và số lượt bình chọn cũng bị
-loại vì không bảo đảm có sẵn trước phát hành.
+Các cột `revenue`, `log_revenue`, `profit`, `roi`, `revenue_to_budget` không
+được dùng làm predictor. `is_successful` chỉ là target. Popularity, rating và
+vote cũng bị cấm vì không bảo đảm có sẵn trước thời điểm phát hành.

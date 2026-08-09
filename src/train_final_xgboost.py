@@ -134,8 +134,9 @@ def main() -> None:
             "joblib": joblib.__version__,
         },
         "interpretation_note": (
-            "0.719483 is nested outer-OOF performance. The packaged model is fit "
-            "on all 1,646 rows and has no separate performance estimate."
+            f"{float(benchmark['macro_f1']):.6f} is nested outer-OOF performance. "
+            f"The packaged model is fit on all {len(raw):,} rows and has no "
+            "separate performance estimate."
         ),
     }
     MANIFEST_PATH.write_text(

@@ -1,54 +1,46 @@
-# Khung báo cáo học thuật
+# Khung báo cáo học thuật tối đa 5 trang
 
-## 1. Giới thiệu
+Định dạng dự kiến: NeurIPS, hai cột; phần nội dung không quá 5 trang, không tính
+tài liệu tham khảo nếu quy định môn học cho phép.
 
-- Trình bày trực tiếp bài toán dự đoán thành công tài chính trước phát hành.
-- Nêu câu hỏi nghiên cứu và cách mô hình hóa thành bài toán phân loại nhị phân.
-- Giới thiệu định nghĩa vận hành: phim thành công khi `revenue >= 2 × budget`.
+## 1. Giới thiệu — khoảng 0,6 trang
 
-Nguồn nội dung: `README.md` và `PROJECT_STATUS.md`.
+- Bối cảnh trực tiếp: thành công chỉ được xác nhận sau phát hành, trong khi một
+  số metadata đã có trước đó.
+- Câu hỏi nghiên cứu và target `revenue >= 2 × budget`.
+- Đóng góp: pipeline TMDb-only, EDA tập trung pre-release và benchmark XGBoost
+  được đánh giá chống leakage.
 
-## 2. Dữ liệu
+## 2. Dữ liệu — khoảng 0,9 trang
 
-- Nguồn chính thức duy nhất: TMDb Official API.
-- Quy mô: 2.597 phim giai đoạn 2000–2025; 1.646 phim đủ điều kiện đánh giá.
-- Trình bày chiến lược lấy mẫu, các nhóm biến, dữ liệu thiếu, ngoại lai và phân
-  bố nhãn.
-- Nêu rõ dữ liệu không được phân phối qua repository công khai.
+- TMDb Official API; 2.597 phim từ 2000–2025, tối đa 100 phim phổ biến/năm.
+- Điều kiện tạo tập modeling 1.646 phim và phân bố hai lớp.
+- Dữ liệu thiếu, quy tắc xử lý số 0 và giới hạn của chiến lược lấy mẫu.
+- Hình `dataset_overview.png`, rộng một cột hoặc toàn chiều ngang khoảng
+  0,30–0,35 trang.
 
-Nguồn nội dung: `docs/data_sources.md`, `docs/preprocessing_decisions.md` và
-`reports/tables/tmdb_enrichment_audit.csv`.
+## 3. Phương pháp — khoảng 1,2 trang
 
-## 3. Phương pháp
+- Nhóm metadata A+B và bốn feature franchise history point-in-time.
+- XGBoost, preprocessing trong pipeline và ngưỡng phân loại.
+- Nested Stratified CV 5×4, outer chỉ đánh giá; quy tắc chống target leakage.
+- Sơ đồ pipeline nhỏ, rộng một cột khoảng 0,20 trang nếu còn không gian.
 
-- Mô tả các nhóm đặc trưng A+B và lịch sử franchise theo thời điểm.
-- Trình bày XGBoost và nested Stratified Cross-Validation 5×4.
-- Giải thích cách chọn ngưỡng trong inner OOF và quy tắc chống rò rỉ dữ liệu.
-- Liệt kê các biến hậu phát hành bị loại khỏi tập đầu vào.
+## 4. Phân tích — khoảng 1,0 trang
 
-Nguồn nội dung: `docs/pre_release_operational_scope.md` và
-`docs/operational_franchise_history_findings.md`.
+- Mức liên hệ riêng lẻ giữa predictor số và target.
+- Tỷ lệ thành công theo `primary_genre` và `is_collection`.
+- Hình `pre_release_feature_associations.png`, rộng hai cột khoảng
+  0,45–0,55 trang.
+- Nhấn mạnh tương quan không đồng nghĩa nhân quả và số lượng nhóm không đều.
 
-## 4. Phân tích dữ liệu
+## 5. Kết quả và thảo luận — khoảng 1,3 trang
 
-- Phân tích mức độ thiếu dữ liệu và phân phối ngân sách/doanh thu.
-- Trình bày quan hệ mô tả giữa ngân sách, doanh thu, thể loại và thời điểm phát
-  hành, đồng thời tránh diễn giải quan hệ tương quan như quan hệ nhân quả.
-- Phân tích mất cân bằng lớp và các quan sát gần ngưỡng tạo nhãn.
-- Không đưa rating, vote hoặc popularity vào nội dung phân tích chính của báo
-  cáo cuối.
+- Bảng Macro-F1, F1/recall từng lớp, balanced accuracy.
+- So sánh A+B cố định với A+B + franchise history.
+- Hình confusion matrix khoảng 0,20 trang; feature importance khoảng 0,25 trang
+  nếu đủ chỗ.
+- Trả lời câu hỏi nghiên cứu, phạm vi áp dụng, hạn chế và hướng phát triển.
 
-Nguồn nội dung: `notebooks/01_eda.ipynb`, `docs/eda_findings.md`, các bảng EDA
-và các hình chọn lọc `01`–`07`.
-
-## 5. Kết quả, thảo luận và kết luận
-
-- Báo cáo Macro-F1 `0,719483`, metric từng lớp và balanced accuracy.
-- Trình bày confusion matrix, độ ổn định giữa các outer fold, phân tích lỗi và
-  feature importance.
-- Thảo luận mức độ dự đoán, hiệu năng thấp hơn ở lớp không thành công và các
-  giới hạn do cách lấy mẫu, định nghĩa nhãn và snapshot TMDb.
-- Kết luận trong phạm vi dữ liệu hiện có; đề xuất dữ liệu point-in-time tốt hơn
-  và temporal holdout cho nghiên cứu tiếp theo.
-
-Nguồn nội dung: `docs/xgboost_results.md`, các bảng benchmark và hình `09`–`12`.
+Nguồn số liệu chính: `docs/eda_findings.md`, `docs/xgboost_results.md`, các bảng
+tổng hợp trong `reports/tables/` và manifest trong `models/`.

@@ -1,21 +1,28 @@
-# Gói mô hình XGBoost chính thức
+# Gói XGBoost chính thức
 
-Thư mục này lưu ba artifact của mô hình XGBoost pre-release operational:
+| File | Vai trò |
+| --- | --- |
+| `xgboost_pre_release_operational_bundle.joblib` | Feature builder, preprocessing, XGBoost và threshold |
+| `xgboost_pre_release_operational_model.json` | Booster native của XGBoost |
+| `xgboost_pre_release_operational_manifest.json` | Cấu hình, phiên bản, checksum và benchmark |
 
-- `xgboost_pre_release_operational_bundle.joblib`: bộ xây dựng đặc trưng, bộ
-  tiền xử lý, mô hình XGBoost và ngưỡng phân loại;
-- `xgboost_pre_release_operational_model.json`: mô hình ở định dạng native của
-  XGBoost;
-- `xgboost_pre_release_operational_manifest.json`: cấu hình, phiên bản thư viện,
-  checksum dữ liệu và kết quả benchmark ngoài mẫu.
+Benchmark ngoài mẫu của gói là Macro-F1 **0,719483** trên 1.646 phim bằng
+nested CV 5×4. Model bundle được fit trên toàn bộ dữ liệu sau khi khóa cấu hình,
+do đó không có một “test score” riêng cho chính file bundle.
 
-Lệnh tái tạo gói mô hình trên máy đã có dữ liệu local:
+Huấn luyện lại sau khi đã tái tạo dữ liệu local:
 
 ```powershell
-& '.\.venv\Scripts\python.exe' 'src\train_final_xgboost.py'
+& '.\.venv\Scripts\python.exe' src\train_final_xgboost.py
 ```
 
-Macro-F1 `0,719483` là kết quả nested outer-OOF trên 1.646 phim, không phải điểm
-huấn luyện của mô hình được xây dựng trên toàn bộ dữ liệu. Các tệp dữ liệu huấn
-luyện không được đóng gói trong thư mục này và không được phân phối qua
-repository.
+Xem schema và dự đoán:
+
+```powershell
+& '.\.venv\Scripts\python.exe' src\predict_xgboost.py --show-schema
+& '.\.venv\Scripts\python.exe' src\predict_xgboost.py input.csv output.csv
+```
+
+Schema đầu vào và giới hạn history được mô tả tại
+[`docs/model_input_schema.md`](../docs/model_input_schema.md). Không nạp file
+`joblib` từ nguồn không tin cậy vì định dạng này có thể thực thi mã khi load.

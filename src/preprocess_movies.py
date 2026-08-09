@@ -1,4 +1,4 @@
-"""Tiền xử lý dữ liệu TMDb-IMDb cho EDA và các bước mô hình hóa sau này."""
+"""Tiền xử lý dữ liệu TMDb cho EDA và pipeline XGBoost."""
 
 import math
 import sys
@@ -8,10 +8,9 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-INPUT_PATH = PROJECT_ROOT / "data" / "interim" / "tmdb_imdb_merged.csv"
+INPUT_PATH = PROJECT_ROOT / "data" / "interim" / "tmdb_movies_2000_2025.csv"
 CLEANED_OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "movies_cleaned.csv"
 MODELING_OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "movies_modeling.csv"
-EXPECTED_INPUT_ROWS = 2597
 
 NUMERIC_COLUMNS = [
     "budget",
@@ -20,8 +19,6 @@ NUMERIC_COLUMNS = [
     "vote_average",
     "vote_count",
     "popularity",
-    "imdb_rating",
-    "imdb_vote_count",
 ]
 LIST_COLUMNS = ["genres", "production_countries", "production_companies"]
 IMPORTANT_COLUMNS = [
@@ -29,11 +26,6 @@ IMPORTANT_COLUMNS = [
     "budget",
     "revenue",
     "runtime",
-    "vote_average",
-    "vote_count",
-    "popularity",
-    "imdb_rating",
-    "imdb_vote_count",
     "genres",
     "is_successful",
 ]
@@ -114,10 +106,8 @@ def read_and_clean_input():
     movies = normalize_column_names(movies)
     movies = movies.replace(r"^\s*$|^\\N$", pd.NA, regex=True)
 
-    if len(movies) != EXPECTED_INPUT_ROWS:
-        raise ValueError(
-            f"Đầu vào phải có {EXPECTED_INPUT_ROWS} dòng, nhưng hiện có {len(movies)}."
-        )
+    if movies.empty:
+        raise ValueError("Dữ liệu TMDb đầu vào đang trống.")
     if movies["tmdb_id"].duplicated().any():
         raise ValueError("Đầu vào có tmdb_id trùng; dừng để kiểm tra dữ liệu nguồn.")
 
@@ -139,9 +129,8 @@ def read_and_clean_input():
     for column in ["budget", "revenue", "runtime"]:
         movies.loc[movies[column] <= 0, column] = pd.NA
 
-    for column in ["vote_average", "imdb_rating"]:
-        invalid_rating = movies[column].notna() & ~movies[column].between(0, 10)
-        movies.loc[invalid_rating, column] = pd.NA
+    invalid_rating = movies["vote_average"].notna() & ~movies["vote_average"].between(0, 10)
+    movies.loc[invalid_rating, "vote_average"] = pd.NA
 
     return movies
 
@@ -151,7 +140,6 @@ def create_features(movies):
 
     movies["budget_available"] = movies["budget"].notna().astype("Int64")
     movies["revenue_available"] = movies["revenue"].notna().astype("Int64")
-    movies["imdb_rating_available"] = movies["imdb_rating"].notna().astype("Int64")
 
     movies["release_year"] = movies["release_date"].dt.year.astype("Int64")
     movies["release_month"] = movies["release_date"].dt.month.astype("Int64")
@@ -162,9 +150,6 @@ def create_features(movies):
     movies["roi"] = (movies["revenue"] - movies["budget"]) / movies["budget"]
     movies["log_budget"] = log1p_series(movies["budget"])
     movies["log_revenue"] = log1p_series(movies["revenue"])
-    movies["log_popularity"] = log1p_series(movies["popularity"])
-    movies["log_vote_count"] = log1p_series(movies["vote_count"])
-    movies["log_imdb_vote_count"] = log1p_series(movies["imdb_vote_count"])
 
     movies["genre_count"] = movies["genres"].map(item_count).astype("Int64")
     movies["primary_genre"] = movies["genres"].map(first_item).astype("string")

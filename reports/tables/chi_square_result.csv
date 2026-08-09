@@ -1,2 +1,0 @@
-chi_square_statistic,degrees_of_freedom,p_value,cramers_v,minimum_expected_frequency,expected_frequency_below_5_count,expected_frequency_below_5_percentage,assumptions_met,genre_groups,observations
-24.625734629895504,11,0.010338191905623007,0.12231498943415207,10.722357229647631,0,0.0,True,12,1646

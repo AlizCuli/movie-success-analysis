@@ -37,8 +37,8 @@ def utc_now() -> str:
 def load_base_movies() -> tuple[list[dict[str, Any]], str]:
     payload = json.loads(BASE_RAW_PATH.read_text(encoding="utf-8"))
     movies = payload["movie_details"]
-    if len(movies) != 2597:
-        raise ValueError(f"Dữ liệu gốc phải có 2.597 phim, hiện có {len(movies)}.")
+    if not movies:
+        raise ValueError("Dữ liệu gốc TMDb đang trống.")
     ids = [int(movie["id"]) for movie in movies]
     if len(ids) != len(set(ids)):
         raise ValueError("Dữ liệu gốc có tmdb_id trùng.")
@@ -325,7 +325,10 @@ def collect(force: bool = False, audit_only: bool = False) -> None:
                 print(f"Tiến độ {position}/{len(pending)}; thành công tổng={len(records)}; lỗi lượt này={errors}")
     normalize_checkpoint(records)
     make_audit(base_movies, records, base_retrieved_at)
-    print(f"Hoàn tất: {len(records)}/2597 phim; lỗi chưa phục hồi trong lượt này: {errors}")
+    print(
+        f"Hoàn tất: {len(records)}/{len(base_movies)} phim; "
+        f"lỗi chưa phục hồi trong lượt này: {errors}"
+    )
 
 
 def parse_args() -> argparse.Namespace:

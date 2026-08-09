@@ -1,5 +1,0 @@
-entity_group,candidate_source,stable_entity_id,approved,status,reason
-director,TMDb /person/{person_id}/movie_credits,TMDb person ID,True,approved,Movie credits expose stable person and movie IDs plus crew job.
-production_company,TMDb /discover/movie?with_companies={company_id},TMDb company ID,True,approved,Company relation is verified using stable IDs; it is not called a distributor.
-cast,TMDb /person/{person_id}/movie_credits,TMDb person ID,True,approved,Movie credits expose stable IDs and billing order.
-distributor,Wikidata P750 joined by P4947/P345,Wikidata QID,False,blocked_pending_provenance_and_coverage_pilot,TMDb production companies are not distributors; Wikidata coverage and theatrical semantics are not yet verified.

@@ -1,5 +1,0 @@
-source,stable_movie_join,stable_distributor_id,contains_actual_distributor,approved,evidence
-TMDb movie details production_companies,True,False,False,False,"production_companies_present=True; field describes producers, not distributors"
-TMDb movie release_dates,True,False,False,False,release fields=certification|descriptors|iso_639_1|note|release_date|type
-IMDb Non-Commercial Datasets,True,False,False,False,official non-commercial files do not include a company/distributor table
-Wikidata P750 joined by P4947/P345,candidate,True,not_yet_verified,False,"requires a separate coverage, reference, territory and theatrical-semantics pilot"

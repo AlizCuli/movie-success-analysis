@@ -1,0 +1,9 @@
+metric,value
+movies_collected,2597.0
+movies_modeling,1646.0
+class_0_count,477.0
+class_1_count,1169.0
+class_0_rate,0.28979343863912516
+class_1_rate,0.7102065613608749
+release_year_min,2000.0
+release_year_max,2025.0

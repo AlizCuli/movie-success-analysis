@@ -105,8 +105,8 @@ def load_pre_release_modeling_data() -> tuple[pd.DataFrame, pd.Series]:
         how="left",
         validate="1:1",
     )
-    if len(merged) != 1646 or merged["tmdb_id"].duplicated().any():
-        raise ValueError("Tập modeling phải có đúng 1.646 tmdb_id duy nhất.")
+    if merged.empty or len(merged) != len(modeling) or merged["tmdb_id"].duplicated().any():
+        raise ValueError("Tập modeling/enrichment phải có tmdb_id duy nhất và ghép 1:1.")
     if merged["retrieved_at"].isna().any():
         raise ValueError("Có phim modeling chưa được enrichment.")
     target = pd.to_numeric(merged["is_successful"], errors="coerce")

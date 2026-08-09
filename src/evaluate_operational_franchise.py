@@ -75,7 +75,7 @@ def main() -> None:
         prediction_rows.extend({"tmdb_id": int(raw.iloc[original_index]["tmdb_id"]), "success": int(target.iloc[original_index]), "outer_fold": outer_fold, "probability_success": float(probability[position]), "threshold": threshold, "prediction": int(prediction[position])} for position, original_index in enumerate(valid_index))
 
     predictions = pd.DataFrame(prediction_rows).sort_values("tmdb_id")
-    if len(predictions) != 1646 or not predictions.tmdb_id.is_unique or not np.isfinite(predictions.probability_success).all():
+    if len(predictions) != len(raw) or not predictions.tmdb_id.is_unique or not np.isfinite(predictions.probability_success).all():
         raise ValueError("Franchise outer OOF validation failed.")
     y = predictions.success.to_numpy(dtype=int)
     pred = predictions.prediction.to_numpy(dtype=int)

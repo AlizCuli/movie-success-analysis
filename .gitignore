@@ -1,8 +1,34 @@
-.venv/
-.idea/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments and IDEs
+.venv/
+venv/
+.idea/
+.vscode/
+
+# Local configuration and operating-system files
 .env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary downloads and logs
+*.part
+*.tmp
+*.log
 
 # Dữ liệu chỉ được giữ local và không phân phối qua repository public.
 # Chỉ giữ README và .gitkeep để mô tả cấu trúc thư mục.
@@ -25,3 +51,10 @@ models/*.pid
 !models/xgboost_pre_release_operational_bundle.joblib
 !models/xgboost_pre_release_operational_model.json
 !models/xgboost_pre_release_operational_manifest.json
+
+# Row-level evaluation artifacts remain local. Public reports only contain
+# aggregate metrics, tables and figures.
+reports/tables/*_oof_predictions.csv
+reports/tables/*_outer_fold_assignments.csv
+reports/tables/xgboost_error_analysis.csv
+reports/predictions/

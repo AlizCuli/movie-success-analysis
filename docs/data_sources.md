@@ -1,36 +1,42 @@
-# Nguồn và phạm vi sử dụng dữ liệu
+# Nguồn và phạm vi dữ liệu
 
-## Nguồn dữ liệu chính thức
+## Nguồn duy nhất
 
-Báo cáo và mô hình cuối chỉ sử dụng dữ liệu từ **TMDB Official API**. Bộ dữ
-liệu phim chính được thu thập ngày 17-07-2026 (UTC), gồm tối đa 100 phim phổ
-biến cho mỗi năm trong giai đoạn 2000–2025.
+Báo cáo và mô hình cuối chỉ sử dụng **TMDb Official API**. Snapshot chính được
+thu thập ngày 17-07-2026 (UTC), gồm tối đa 100 phim phổ biến cho mỗi năm từ
+2000 đến 2025.
 
-Các trường được lưu từ TMDb gồm mã phim, tiêu đề, ngày phát hành, ngôn ngữ,
-ngân sách, doanh thu, thời lượng, thể loại, quốc gia và công ty sản xuất,
-collection, trạng thái cùng một số metadata liên quan. Trường `imdb_id` trong
-phản hồi TMDb chỉ được xem là mã định danh tham chiếu; mô hình cuối không sử
-dụng điểm hoặc số lượt đánh giá từ IMDb.
+Các endpoint chính:
 
-Các biến phản hồi khán giả của TMDb như `popularity`, `vote_average` và
-`vote_count` có thể tồn tại trong dữ liệu gốc nhằm bảo toàn phản hồi API, nhưng
-không được sử dụng làm biến dự báo vì không bảo đảm tồn tại trước thời điểm
-phát hành.
+- `/discover/movie`: xác định danh sách phim theo từng năm;
+- `/movie/{movie_id}`: budget, revenue, runtime, genre, quốc gia và công ty;
+- `/movie/{movie_id}/credits`, `/release_dates`, `/keywords`: metadata
+  enrichment dùng trong phạm vi pre-release operational.
 
-Nguồn: [The Movie Database (TMDB)](https://www.themoviedb.org/).
+Các trường popularity, vote và rating có thể được giữ nguyên trong phản hồi thô
+để bảo toàn dữ liệu nguồn, nhưng không được dùng trong EDA chính hoặc predictor
+vì không bảo đảm có sẵn trước phát hành. `revenue` chỉ được dùng để tạo target.
+
+Nguồn: [The Movie Database (TMDb)](https://www.themoviedb.org/).
 
 > This product uses the TMDB API but is not endorsed or certified by TMDB.
 
+## Chiến lược lấy mẫu
+
+- Giai đoạn: 2000-01-01 đến 2025-12-31.
+- Tối đa 5 trang mỗi năm, tương đương tối đa 100 phim mỗi năm.
+- Sắp xếp theo `popularity.desc` chỉ để chọn mẫu khi thu thập; popularity không
+  phải predictor.
+- Chỉ giữ phim không dành cho người lớn, không phải video và có ngày phát hành
+  thực tế trong phạm vi.
+- Loại trùng bằng `tmdb_id`.
+
 ## Chính sách phân phối
 
-Các tệp dữ liệu gốc và dữ liệu dẫn xuất không được phân phối qua repository
-công khai. Repository chỉ cung cấp mã nguồn, schema, tài liệu, kết quả tổng hợp
-và cấu trúc thư mục. Người dùng muốn tái lập nghiên cứu phải tự thu thập dữ liệu
-qua TMDb Official API bằng token của chính mình.
+File raw, interim, processed, checkpoint và dự đoán cấp từng phim chỉ lưu local
+và bị `.gitignore` loại khỏi Git. Repository public chỉ cung cấp mã nguồn, cấu
+trúc thư mục, model đóng gói và kết quả tổng hợp. Người dùng tự tái tạo snapshot
+bằng TMDb API Read Access Token của mình.
 
-## Artifact ngoài phạm vi cuối
-
-Trong giai đoạn khảo sát ban đầu, dự án từng tải và ghép IMDb Ratings. Mã nguồn
-liên quan được giữ để bảo toàn lịch sử kỹ thuật, nhưng các tệp dữ liệu IMDb chỉ
-được lưu local và không được phân phối lại. Các giá trị IMDb không tham gia tập
-biến dự báo, benchmark XGBoost `0,719483` hoặc báo cáo cuối.
+Do TMDb được cập nhật liên tục, số liệu tái chạy vào thời điểm khác có thể thay
+đổi nhẹ so với snapshot dùng để thiết lập benchmark.
