@@ -1,4 +1,4 @@
-# Schema đầu vào cho model đóng gói
+# Lược đồ đầu vào cho mô hình đóng gói
 
 `src/predict_xgboost.py` nhận CSV metadata đã được cấu trúc hóa, không nhận trực
 tiếp JSON từ TMDb. Mỗi dòng là một phim.
@@ -20,17 +20,19 @@ tiếp JSON từ TMDb. Mỗi dòng là một phim.
 `has_tagline`, `keyword_count`.
 
 `tmdb_id` là tùy chọn và chỉ được chép sang file kết quả để nhận diện phim.
-CSV không được chứa target hoặc các biến hậu phát hành để làm predictor.
+CSV không được chứa biến mục tiêu hoặc các biến hậu phát hành dưới vai trò đặc
+trưng dự báo.
 
 ## Giá trị thiếu
 
-Giữ giá trị thiếu ở dạng ô trống/NaN. Numeric imputer và categorical encoder đã
-được fit trong bundle; không tự điền bằng thống kê của dữ liệu cần dự đoán.
+Giá trị thiếu được giữ dưới dạng ô trống hoặc NaN. Bộ điền khuyết biến số và bộ
+mã hóa biến phân loại đã được khớp trong gói mô hình; không sử dụng thống kê của
+dữ liệu cần dự đoán để tự điền giá trị.
 
-## Giới hạn franchise history
+## Giới hạn của đặc trưng lịch sử franchise
 
-Bundle chứa reference history của snapshot huấn luyện. Khi dự đoán, bốn feature
-franchise chỉ dùng phim trong reference có ngày phát hành sớm hơn phim đầu vào.
-Bundle không tự cập nhật bằng các dòng khác trong file input. Muốn cập nhật kho
-history bằng phim mới, cần tái huấn luyện theo đúng protocol point-in-time.
-
+Gói mô hình chứa kho lịch sử tham chiếu của ảnh chụp dữ liệu huấn luyện. Khi suy
+luận, bốn đặc trưng franchise chỉ sử dụng các phim tham chiếu có ngày phát hành
+sớm hơn phim đầu vào. Kho lịch sử không tự cập nhật bằng các dòng khác trong
+file đầu vào. Việc bổ sung phim mới vào kho lịch sử yêu cầu tái huấn luyện theo
+đúng giao thức theo thời điểm.

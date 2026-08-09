@@ -1,6 +1,6 @@
-# Dự đoán thành công tài chính của phim trước phát hành
+# Dự đoán khả năng thành công tài chính của phim dựa trên thông tin có sẵn trước khi phát hành
 
-Project môn **Phân tích Dữ liệu** tại **Trường Đại học Mở Thành phố Hồ Chí Minh**.
+Dự án học phần **Phân tích Dữ liệu**, **Trường Đại học Mở Thành phố Hồ Chí Minh**.
 
 **Sinh viên thực hiện**
 
@@ -9,18 +9,18 @@ Project môn **Phân tích Dữ liệu** tại **Trường Đại học Mở Th�
 
 ## Tổng quan
 
-Project đánh giá mức độ mà thông tin có sẵn trước khi phát hành có thể dự đoán
-khả năng thành công tài chính của phim. Bài toán được xây dựng dưới dạng phân
-loại nhị phân bằng XGBoost:
+Nghiên cứu đánh giá mức độ mà thông tin có sẵn trước khi phát hành cho phép dự
+đoán khả năng thành công tài chính của phim. Bài toán được biểu diễn dưới dạng
+phân loại nhị phân và giải quyết bằng XGBoost:
 
 ```text
 is_successful = 1 nếu revenue >= 2 × budget
 is_successful = 0 nếu revenue < 2 × budget
 ```
 
-`budget` là thông tin đầu vào; `revenue` chỉ được dùng để tạo nhãn. Mô hình
-không sử dụng popularity, rating, vote, profit, ROI hoặc biến dẫn xuất từ doanh
-thu làm predictor.
+`budget` là đặc trưng đầu vào; `revenue` chỉ được sử dụng để xác lập nhãn. Mô
+hình không sử dụng `popularity`, điểm đánh giá, lượt bình chọn, `profit`, ROI
+hoặc bất kỳ biến dẫn xuất nào từ doanh thu làm đặc trưng dự báo.
 
 ### Câu hỏi nghiên cứu
 
@@ -31,28 +31,32 @@ dự báo đáng kể nhất?
 
 ## Kết quả chính
 
-Benchmark chính thức là **XGBoost pre-release operational kết hợp lịch sử
-franchise theo thời điểm**, được đánh giá bằng nested Stratified
-Cross-Validation 5 outer × 4 inner fold trên 1.646 phim.
+Cấu hình tham chiếu chính thức là **XGBoost sử dụng thông tin trước phát hành
+theo phạm vi vận hành, kết hợp lịch sử franchise theo thời điểm**. Mô hình được
+đánh giá bằng kiểm định chéo phân tầng lồng nhau gồm 5 vòng ngoài và 4 vòng
+trong trên 1.646 phim.
 
-| Chỉ số outer-OOF | Giá trị |
+| Chỉ số trên dự đoán ngoài mẫu gộp | Giá trị |
 | --- | ---: |
 | Macro-F1 | **0,719483** |
 | F1 lớp không thành công | 0,605128 |
 | Recall lớp không thành công | 0,618449 |
 | Balanced accuracy | 0,722398 |
 
-Model đóng gói nằm trong [`models/`](models/README.md). Đây là benchmark ngoài
-mẫu; không phải điểm huấn luyện của model fit trên toàn bộ dữ liệu.
+Gói mô hình nằm trong [`models/`](models/README.md). Các chỉ số trên là kết quả
+ngoài mẫu, không phải kết quả huấn luyện của mô hình được khớp trên toàn bộ dữ
+liệu.
 
 ## Dữ liệu
 
-Nguồn chính thức duy nhất là **TMDb Official API**. Snapshot nghiên cứu gồm
-2.597 phim phát hành từ 2000 đến 2025, tối đa 100 phim phổ biến mỗi năm. Tập
-modeling giữ 1.646 phim có budget, revenue, runtime và release date hợp lệ.
+Nguồn dữ liệu chính thức duy nhất là **TMDb Official API**. Ảnh chụp dữ liệu
+nghiên cứu gồm 2.597 phim phát hành trong giai đoạn 2000–2025, với tối đa 100
+phim phổ biến mỗi năm. Tập dữ liệu mô hình hóa gồm 1.646 phim có `budget`,
+`revenue`, `runtime` và `release_date` hợp lệ.
 
-Dữ liệu không được commit vào repository public. Người dùng cần tự thu thập
-bằng TMDb API Read Access Token. Xem chính sách và schema đầu ra tại
+Dữ liệu cấp phim không được phân phối trong repository công khai. Việc tái tạo
+dữ liệu yêu cầu TMDb API Read Access Token. Chính sách phân phối và lược đồ đầu
+ra được trình bày tại
 [`data/README.md`](data/README.md) và [`docs/data_sources.md`](docs/data_sources.md).
 
 > This product uses the TMDB API but is not endorsed or certified by TMDB.
@@ -61,19 +65,19 @@ bằng TMDb API Read Access Token. Xem chính sách và schema đầu ra tại
 
 ```text
 movie-success-analysis/
-├── .github/workflows/        # Kiểm tra tự động khi push/PR
-├── data/                     # Cấu trúc dữ liệu local; dữ liệu thật bị Git bỏ qua
+├── .github/workflows/        # Kiểm tra tự động khi cập nhật mã nguồn
+├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật bị Git bỏ qua
 ├── docs/                     # Phương pháp, quyết định và kết quả nghiên cứu
-├── models/                   # Gói XGBoost chính thức và manifest checksum
+├── models/                   # Gói XGBoost chính thức, manifest và checksum
 ├── notebooks/                # Notebook EDA tái lập được
 ├── reports/
 │   ├── figures/              # Hình tổng hợp dùng trong báo cáo
-│   └── tables/               # Bảng metric tổng hợp, không chứa dữ liệu từng phim
-├── src/                      # Mã nguồn từng bước của pipeline
-├── tests/                    # Kiểm tra contract không cần dữ liệu local
+│   └── tables/               # Bảng chỉ số tổng hợp, không chứa dữ liệu từng phim
+├── src/                      # Mã nguồn của từng công đoạn xử lý
+├── tests/                    # Kiểm tra giao ước không cần dữ liệu cục bộ
 ├── .env.example              # Mẫu tên biến môi trường, không chứa token thật
 ├── requirements.txt          # Phiên bản thư viện đã khóa
-└── run_pipeline.py           # Điểm vào chung cho toàn bộ workflow
+└── run_pipeline.py           # Điểm thực thi chung cho toàn bộ quy trình
 ```
 
 ## Pipeline Workflow
@@ -82,19 +86,19 @@ movie-success-analysis/
 flowchart LR
     A["TMDb Official API"] --> B["Thu thập 2000–2025"]
     B --> C["Tiền xử lý TMDb"]
-    B --> D["Thu thập metadata enrichment"]
+    B --> D["Thu thập siêu dữ liệu bổ sung"]
     C --> E["EDA và kiểm tra chất lượng"]
     D --> E
-    C --> F["Feature pre-release"]
+    C --> F["Đặc trưng trước phát hành"]
     D --> F
     F --> G["Nested CV 5×4"]
     G --> H["Bảng và hình tổng hợp"]
     F --> I["Đóng gói XGBoost cuối"]
 ```
 
-Mọi imputer, encoder, vocabulary, đặc trưng lịch sử, số vòng boosting và ngưỡng
-phân loại đều được học/chọn bên trong training hoặc inner CV. Outer folds chỉ
-được dùng để đánh giá cuối cùng.
+Bộ điền khuyết, bộ mã hóa, từ vựng, trạng thái đặc trưng lịch sử, số vòng
+boosting và ngưỡng phân loại đều được học hoặc lựa chọn trong dữ liệu huấn
+luyện của từng vòng kiểm định. Các vòng ngoài chỉ phục vụ đánh giá cuối cùng.
 
 ## How to Run
 
@@ -118,15 +122,15 @@ python3.14 -m venv .venv
 cp .env.example .env
 ```
 
-Điền API Read Access Token của bạn vào `.env`:
+Khai báo API Read Access Token trong `.env`:
 
 ```text
 TMDB_API_TOKEN=your_read_access_token_here
 ```
 
-Không commit `.env` hoặc hiển thị token trong log.
+File `.env` phải được giữ ngoài Git và token không được ghi vào nhật ký chạy.
 
-### 2. Chạy pipeline
+### 2. Chạy quy trình
 
 Chạy toàn bộ quy trình:
 
@@ -146,30 +150,32 @@ Hoặc chạy từng chặng độc lập:
 & '.\.venv\Scripts\python.exe' run_pipeline.py report
 ```
 
-`collect` có checkpoint và không tải lại dữ liệu hoàn chỉnh nếu không cần.
-`evaluate` chạy nested CV nên là chặng tốn thời gian nhất. Dữ liệu và dự đoán
-cấp từng phim được giữ local theo `.gitignore`.
+`collect` sử dụng điểm kiểm tra để hỗ trợ tiếp tục quá trình thu thập và tránh
+tải lại file đã hoàn chỉnh. `evaluate` thực hiện kiểm định chéo lồng nhau nên có
+chi phí tính toán lớn nhất. Dữ liệu và dự đoán cấp từng phim được lưu cục bộ
+theo quy tắc trong `.gitignore`.
 
-TMDb là nguồn sống nên snapshot mới có thể khác 2.597/1.646 dòng. Pipeline xử lý
-theo số dòng thực tế; benchmark 0,719483 chỉ tái lập chính xác với snapshot và
-phiên bản dependency ghi trong manifest của model đã công bố.
+TMDb được cập nhật liên tục nên ảnh chụp dữ liệu mới có thể khác quy mô
+2.597/1.646 dòng. Quy trình xử lý thích ứng với số dòng thực tế; kết quả
+0,719483 chỉ có thể được tái lập chính xác với cùng ảnh chụp dữ liệu và các
+phiên bản thư viện được ghi trong manifest của mô hình.
 
-### 3. Kiểm tra repository
+### 3. Kiểm tra kho mã nguồn
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -m compileall -q src tests run_pipeline.py
 & '.\.venv\Scripts\python.exe' -m unittest discover -s tests -v
 ```
 
-### 4. Dự đoán bằng model đóng gói
+### 4. Suy luận bằng mô hình đóng gói
 
-Xem schema đầu vào:
+Xem lược đồ đầu vào:
 
 ```powershell
 & '.\.venv\Scripts\python.exe' src\predict_xgboost.py --show-schema
 ```
 
-Thực hiện dự đoán trên CSV metadata đã được cấu trúc hóa:
+Thực hiện dự đoán trên CSV siêu dữ liệu đã được cấu trúc hóa:
 
 ```powershell
 & '.\.venv\Scripts\python.exe' src\predict_xgboost.py input.csv output.csv
@@ -178,21 +184,22 @@ Thực hiện dự đoán trên CSV metadata đã được cấu trúc hóa:
 Chi tiết về các trường bắt buộc và giới hạn suy luận được trình bày trong
 [`docs/model_input_schema.md`](docs/model_input_schema.md).
 
-## Tài liệu và artifact chính
+## Tài liệu và kết quả chính
 
 - [`notebooks/01_eda.ipynb`](notebooks/01_eda.ipynb): EDA TMDb-only.
 - [`docs/report_outline.md`](docs/report_outline.md): bố cục báo cáo học thuật.
-- [`docs/xgboost_results.md`](docs/xgboost_results.md): kết quả benchmark.
+- [`docs/xgboost_results.md`](docs/xgboost_results.md): kết quả tham chiếu.
 - [`docs/tuning_registry.md`](docs/tuning_registry.md): lịch sử thí nghiệm để
   tránh lặp lại hướng đã bị loại.
-- [`GPT_CONTEXT.md`](GPT_CONTEXT.md): hồ sơ bàn giao cho GPT/Codex.
 
 ## Giới hạn
 
 - Mẫu tối đa 100 phim phổ biến mỗi năm, không phải mẫu ngẫu nhiên của toàn thị
   trường.
-- Budget và revenue TMDb còn thiếu đáng kể; chỉ phim có target hợp lệ mới vào
-  tập modeling.
-- Metadata TMDb là snapshot hiện tại. Vì vậy phạm vi được gọi là
-  *pre-release operational*, không phải archive lịch sử tuyệt đối của mọi trường.
-- `revenue >= 2 × budget` là quy ước thành công tài chính của project.
+- `budget` và `revenue` trên TMDb còn thiếu đáng kể; chỉ phim có biến mục tiêu
+  hợp lệ mới được đưa vào tập dữ liệu mô hình hóa.
+- Siêu dữ liệu TMDb là ảnh chụp ở thời điểm thu thập, không phải kho lưu trữ
+  lịch sử chứng minh thời điểm công bố của mọi trường. Vì vậy, nghiên cứu sử
+  dụng phạm vi trước phát hành theo quy ước vận hành.
+- `revenue >= 2 × budget` là tiêu chuẩn thành công tài chính được xác lập trong
+  phạm vi nghiên cứu.

@@ -1,38 +1,43 @@
-# Phạm vi pre-release operational
+# Phạm vi trước phát hành theo quy ước vận hành
 
 ## Quy ước phạm vi
 
-Project sử dụng metadata TMDb có ý nghĩa trước phát hành: budget, runtime, lịch
-phát hành, genre, ngôn ngữ, quốc gia, công ty sản xuất, collection,
-certification, quy mô cast/crew, thông tin phát hành, overview/tagline và
-keyword. Đây là phạm vi **pre-release operational** vì snapshot TMDb được tải ở
-hiện tại, không phải archive chứng minh thời điểm công bố của từng trường.
+Dự án sử dụng các trường TMDb có ý nghĩa trước phát hành: ngân sách, thời lượng,
+lịch phát hành, thể loại, ngôn ngữ, quốc gia, công ty sản xuất, collection,
+phân loại độ tuổi, quy mô diễn viên/đoàn làm phim, thông tin phát hành, mô tả,
+tagline và từ khóa. Phạm vi này được gọi là **trước phát hành theo quy ước vận
+hành** vì ảnh chụp TMDb được tải ở hiện tại, không phải kho lưu trữ chứng minh
+thời điểm công bố của từng trường.
 
-Revenue chỉ tạo target. Popularity, rating, vote, profit, ROI và mọi biến dẫn
-xuất từ revenue bị cấm tuyệt đối trong predictor.
+`revenue` chỉ được sử dụng để tạo biến mục tiêu. `popularity`, điểm đánh giá,
+lượt bình chọn, `profit`, ROI và mọi biến dẫn xuất từ doanh thu không được sử
+dụng làm đặc trưng dự báo.
 
-## Feature set chính thức
+## Tập đặc trưng chính thức
 
-- **Metadata cơ bản:** `log_budget`, runtime, năm/tháng/mùa phát hành, genre đa
-  nhãn, ngôn ngữ, quốc gia và công ty sản xuất.
-- **Metadata enrichment:** collection, số công ty/ngôn ngữ, số cast/crew,
-  certification, số quốc gia/sự kiện chiếu rạp, độ dài overview, tagline và
-  keyword.
-- **Franchise history point-in-time:** số phim trước đó, tỷ lệ thành công đã
-  smoothing, mean log-budget lịch sử và số năm từ phần phim gần nhất.
+- **Siêu dữ liệu cơ bản:** `log_budget`, thời lượng, năm/tháng/mùa phát hành,
+  thể loại đa nhãn, ngôn ngữ, quốc gia và công ty sản xuất.
+- **Siêu dữ liệu bổ sung:** collection, số công ty/ngôn ngữ, quy mô diễn viên và
+  đoàn làm phim, phân loại độ tuổi, số quốc gia/sự kiện chiếu rạp, độ dài mô tả,
+  tagline và số từ khóa.
+- **Lịch sử franchise theo thời điểm:** số phim trước đó, tỷ lệ thành công lịch
+  sử có làm trơn, trung bình `log_budget` lịch sử và số năm kể từ phần phim gần
+  nhất.
 
-## Protocol chống leakage
+## Giao thức chống rò rỉ dữ liệu
 
-1. Giữ cố định 1.646 phim, target và outer StratifiedKFold 5 fold, seed 42.
-2. Inner StratifiedKFold 4 fold, seed 43 dùng để chọn số vòng và threshold.
-3. Imputer, encoder, genre vocabulary và history builder chỉ fit trên training
-   partition tương ứng.
-4. Franchise history chỉ dùng phim có `release_date` sớm hơn phim truy vấn; phim
-   cùng ngày không làm history cho nhau.
-5. Outer validation chỉ đánh giá cuối, không quay lại lựa chọn feature hay tham
-   số.
+1. Giữ cố định 1.646 phim, biến mục tiêu và `StratifiedKFold` 5 vòng ngoài với
+   seed 42.
+2. `StratifiedKFold` 4 vòng trong với seed 43 được sử dụng để chọn số vòng
+   boosting và ngưỡng phân loại.
+3. Bộ điền khuyết, bộ mã hóa, từ vựng thể loại và bộ kiến tạo lịch sử chỉ được
+   khớp trên phân hoạch huấn luyện tương ứng.
+4. Lịch sử franchise chỉ sử dụng phim có `release_date` sớm hơn phim truy vấn;
+   các phim cùng ngày không tạo lịch sử cho nhau.
+5. Phân hoạch vòng ngoài chỉ phục vụ đánh giá cuối cùng và không được sử dụng
+   lại để lựa chọn đặc trưng hoặc tham số.
 
-## Benchmark
+## Mốc tham chiếu
 
-XGBoost A+B + franchise history đạt pooled outer-OOF Macro-F1 **0,719483**, F1
+XGBoost A+B kết hợp lịch sử franchise đạt Macro-F1 ngoài mẫu gộp **0,719483**, F1
 lớp 0 **0,605128**, recall lớp 0 **0,618449** và balanced accuracy **0,722398**.

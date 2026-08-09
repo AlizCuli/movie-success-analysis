@@ -4,21 +4,22 @@
 
 Các phần phim đã phát hành trước trong cùng collection có thể cung cấp tín hiệu
 về mức độ quen thuộc của thương hiệu và lịch sử quy mô dự án. Thí nghiệm chỉ bổ
-sung history vào feature A+B hiện hành, không thay đổi mẫu, target hoặc outer
-split.
+sung đặc trưng lịch sử vào tập đặc trưng A+B, không thay đổi mẫu, biến mục tiêu
+hoặc phân hoạch vòng ngoài.
 
-## Bốn feature lịch sử
+## Bốn đặc trưng lịch sử
 
 - `collection_prior_movie_count`;
-- `collection_prior_success_rate` có smoothing;
+- `collection_prior_success_rate` có làm trơn;
 - `collection_prior_mean_log_budget`;
 - `collection_years_since_previous`.
 
-History builder được fit riêng trong training partition. Chỉ phim có ngày phát
-hành sớm hơn phim cần dự đoán được dùng; validation/test không cập nhật kho lịch
-sử. Revenue của phim mục tiêu không bao giờ là predictor.
+Bộ kiến tạo lịch sử được khớp riêng trong từng phân hoạch huấn luyện. Chỉ phim
+có ngày phát hành sớm hơn phim cần dự đoán được sử dụng; phân hoạch xác thực và
+kiểm thử không cập nhật kho lịch sử. `revenue` của phim mục tiêu không được sử
+dụng làm đặc trưng dự báo.
 
-## Kết quả pooled outer-OOF
+## Kết quả ngoài mẫu gộp
 
 | Cấu hình | Macro-F1 | F1 lớp 0 | Recall lớp 0 | Balanced accuracy |
 | --- | ---: | ---: | ---: | ---: |
@@ -27,8 +28,10 @@ sử. Revenue của phim mục tiêu không bao giờ là predictor.
 
 Franchise history tăng Macro-F1 0,008505 và F1 lớp 0 0,007934, trong khi recall
 lớp 0 giảm nhẹ 0,006289. Cải thiện là nhỏ nhưng xuất hiện ở metric chính và
-balanced accuracy; vì vậy cấu hình này được chọn làm benchmark, không được diễn
+giải như bằng chứng nhân quả về tác động của franchise.
+balanced accuracy; vì vậy cấu hình này được chọn làm mốc tham chiếu. Chênh lệch
+không được diễn giải như bằng chứng nhân quả về tác động của franchise.
 giải như bằng chứng nhân quả về tác động của franchise.
 
-Các kết quả công khai là bảng tổng hợp trong `reports/tables/`; dự đoán và outer
-fold assignment cấp từng phim chỉ lưu local.
+Các kết quả công khai là bảng tổng hợp trong `reports/tables/`; dự đoán và phân
+hoạch vòng ngoài cấp từng phim chỉ được lưu cục bộ.
