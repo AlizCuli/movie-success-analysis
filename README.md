@@ -66,7 +66,7 @@ ra được trình bày tại
 ```text
 movie-success-analysis/
 ├── .github/workflows/        # Kiểm tra tự động khi cập nhật mã nguồn
-├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật được ẩn
+├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật không được phép công bố
 ├── docs/                     # Phương pháp, quyết định và kết quả nghiên cứu
 ├── models/                   # Gói XGBoost chính thức, manifest và checksum
 ├── notebooks/                # Notebook EDA có thể tái lập
