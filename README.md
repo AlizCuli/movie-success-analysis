@@ -93,10 +93,6 @@ flowchart LR
     G --> H["Đánh giá và lưu"]
 ```
 
-Bộ điền khuyết, bộ mã hóa, từ vựng, trạng thái đặc trưng lịch sử, số vòng
-boosting và ngưỡng phân loại đều được học hoặc lựa chọn trong dữ liệu huấn
-luyện của từng vòng kiểm định. Các vòng ngoài chỉ phục vụ đánh giá cuối cùng.
-
 ## How to Run
 
 ### 1. Chuẩn bị môi trường
