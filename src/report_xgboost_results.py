@@ -80,7 +80,7 @@ def load_aggregate_artifacts() -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
     return fold_metrics, matrix, importance
 
 
-def main() -> None:
+def main(include_feature_importance: bool = True) -> None:
     TABLES.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
     sns.set_theme(style="whitegrid", context="notebook")
@@ -153,6 +153,17 @@ def main() -> None:
     axis.set_ylabel("Macro-F1")
     axis.legend()
     save_figure(figure, "xgboost_fold_macro_f1.png")
+
+    # The public report figure set does not include the optional importance
+    # chart.  Keep the historical CLI behavior by generating it by default,
+    # while allowing the reproducibility orchestrator to request only the
+    # two evaluation figures needed by the report.
+    if not include_feature_importance:
+        pooled = metrics(actual, predicted)
+        pd.DataFrame([{"rows": len(actual), **pooled}]).to_csv(
+            TABLES / "xgboost_pooled_metrics.csv", index=False
+        )
+        return
 
     top = importance.head(20).sort_values("importance").copy()
     top["display_feature"] = (

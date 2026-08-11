@@ -141,12 +141,18 @@ Hoặc chạy từng chặng độc lập:
 & '.\.venv\Scripts\python.exe' run_pipeline.py evaluate
 & '.\.venv\Scripts\python.exe' run_pipeline.py train
 & '.\.venv\Scripts\python.exe' run_pipeline.py report
+& '.\.venv\Scripts\python.exe' run_pipeline.py figures
 ```
 
 `collect` sử dụng điểm kiểm tra để hỗ trợ tiếp tục quá trình thu thập và tránh
 tải lại file đã hoàn chỉnh. `evaluate` thực hiện kiểm định chéo lồng nhau nên có
 chi phí tính toán lớn nhất. Dữ liệu và dự đoán cấp từng phim được lưu cục bộ
 theo quy tắc trong `.gitignore`.
+
+`figures` tái tạo chín hình trong `reports/figures/` từ dữ liệu cục bộ và các
+artifact tổng hợp đã được theo dõi. Dữ liệu cấp phim không nằm trong bản clone
+công khai, nên cần hoàn tất các chặng `collect`–`preprocess`–`enrich` trước khi
+chạy chặng này; các PNG hiện có vẫn có thể xem trực tiếp.
 
 TMDb được cập nhật liên tục nên ảnh chụp dữ liệu mới có thể khác quy mô
 2.597/1.646 dòng. Quy trình xử lý thích ứng với số dòng thực tế; kết quả

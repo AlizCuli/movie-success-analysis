@@ -29,9 +29,10 @@ STAGES: dict[str, list[Path]] = {
     ],
     "train": [ROOT / "src" / "train_final_xgboost.py"],
     "report": [ROOT / "src" / "report_xgboost_results.py"],
+    "figures": [ROOT / "src" / "generate_report_figures.py"],
 }
 
-PIPELINE_ORDER = ["collect", "preprocess", "enrich", "eda", "evaluate", "train", "report"]
+PIPELINE_ORDER = ["collect", "preprocess", "enrich", "eda", "evaluate", "train", "report", "figures"]
 
 
 def run_script(script: Path) -> None:

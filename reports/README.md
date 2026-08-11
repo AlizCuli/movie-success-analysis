@@ -1,37 +1,47 @@
-# Báo cáo tổng hợp
+# Báo cáo và hình minh họa
 
-Repository công khai chỉ theo dõi các kết quả tổng hợp, không công khai bản ghi
-hoặc dự đoán cấp từng phim.
+Thư mục này chứa các bảng tổng hợp và chín hình được chọn cho báo cáo cuối
+cùng. Các tệp PNG được lưu sẵn để người dùng clone repository có thể xem ngay.
 
-## Hình
+## Tái tạo chín hình
 
-- `dataset_overview.png`: tỷ lệ thiếu ở các trường cốt lõi và phân bố biến mục
-  tiêu.
-- `pre_release_spearman_heatmap.png`: heatmap độc lập, phù hợp đặt theo chiều
-  rộng hai cột trong báo cáo.
-- `success_by_genre_collection.png`: biểu đồ thể loại/trạng thái collection độc
-  lập, phù hợp đặt trong một cột báo cáo.
-- `tmdb_raw_feature_map.png`: các trường metadata TMDb đầu vào trước feature
+Sau khi có các dữ liệu cấp phim ở máy cục bộ, chạy từ thư mục gốc:
+
+```powershell
+& ".\.venv\Scripts\python.exe" src\generate_report_figures.py
+```
+
+Lệnh trên gọi lần lượt EDA TMDb, bản đồ metadata đầu vào, phân tích độ rộng
+phát hành rạp và các hình đánh giá XGBoost. Chương trình kiểm tra schema tổng
+hợp và xác nhận đủ chín tệp đầu ra trước khi kết thúc.
+
+Các đầu vào cấp phim cần có tại máy cục bộ:
+
+- `data/processed/movies_cleaned.csv`
+- `data/processed/movies_modeling.csv`
+- `data/raw/tmdb_movie_enrichment.jsonl`
+
+Repository công khai không phân phối các tệp dữ liệu cấp phim; vì vậy một bản
+clone mới có thể xem PNG đã lưu nhưng cần tái tạo dữ liệu theo hướng dẫn thu
+thập và tiền xử lý trước khi chạy lại lệnh trên. Không cần gọi lại API chỉ để
+xem các hình đã có.
+
+## Bộ hình hiện hành
+
+- `dataset_overview.png`: quy mô tập dữ liệu, thiếu dữ liệu và phân bố nhãn.
+- `pre_release_spearman_heatmap.png`: tương quan Spearman của các biến số dùng
+  trong phân tích mô tả.
+- `success_by_genre_collection.png`: tỷ lệ `is_successful` theo thể loại và
+  trạng thái collection.
+- `tmdb_raw_feature_map.png`: mười lăm trường metadata TMDb trước feature
   engineering.
-- `xgboost_performance_summary.png`: các chỉ số đánh giá ngoài mẫu của XGBoost.
 - `Tỷ lệ thành công tài chính theo số quốc gia phát hành rạp..png`: tỷ lệ thành
-  công theo bốn nhóm độ rộng phát hành rạp, với số liệu kiểm chứng từ 1.646
-  phim modeling.
-- `ti le.png`: so sánh tỷ lệ thành công theo độ rộng phát hành rạp và trạng thái
-  collection.
-- `xgboost_confusion_matrix.png`: ma trận nhầm lẫn gộp từ dự đoán ngoài mẫu.
-- `xgboost_fold_macro_f1.png`: Macro-F1 của năm vòng kiểm định ngoài.
+  công theo bốn nhóm độ rộng phát hành rạp.
+- `ti le.png`: tương tác giữa độ rộng phát hành rạp và collection.
+- `xgboost_performance_summary.png`: các chỉ số outer-OOF chính của XGBoost.
+- `xgboost_confusion_matrix.png`: ma trận nhầm lẫn outer-OOF.
+- `xgboost_fold_macro_f1.png`: Macro-F1 theo năm outer fold.
 
-## Bảng
-
-- Nhóm `dataset_*`, `core_missingness`, `pre_release_spearman`,
-  `success_by_*`, `yearly_*`: kết quả EDA tổng hợp.
-- Nhóm `operational_ab_fixed_*`: cấu hình đối chứng XGBoost A+B.
-- Nhóm `operational_franchise_*`: cấu hình tham chiếu A+B kết hợp lịch sử
-  franchise.
-- Nhóm `xgboost_*`: chỉ số, ma trận nhầm lẫn, mức độ quan trọng của đặc trưng
-  và thông tin đóng gói.
-
-Các file `*_oof_predictions.csv`, `*_outer_fold_assignments.csv` và dữ liệu
-phân tích lỗi từng phim được tạo cục bộ khi đánh giá nhưng bị `.gitignore` loại
-khỏi repository công khai.
+Các bảng `reports/tables/` là artifact tổng hợp phục vụ tái tạo những hình
+đánh giá mô hình. Dữ liệu dòng-level, token và môi trường ảo luôn bị loại khỏi
+Git theo chính sách của project.
