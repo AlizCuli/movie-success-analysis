@@ -22,4 +22,4 @@ data/processed/movies_modeling.csv
 
 Mọi nội dung trong các thư mục trên, ngoại trừ `.gitkeep`, đều bị `.gitignore`
 loại khỏi Git. Token không được lưu trong `data/` và chỉ được khai báo trong
-file `.env` cục bộ.
+file `.env` cục bộ. Tất cả được tuân thủ theo quy định của TMDb: không được công khai project.
