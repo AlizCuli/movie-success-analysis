@@ -21,7 +21,6 @@ ngoài mẫu gộp **0,719483** trên 1.646 phim.
 | --- | --- | ---: | --- |
 | Extended XGBoost cũ | Có tín hiệu hậu phát hành | 0,7597 | Không hợp lệ cho đề tài cuối |
 | XGBoost gần với phạm vi trước phát hành | Phạm vi cũ chưa được kiểm định đầy đủ | 0,7144 | Mốc lịch sử, không phải mốc tham chiếu hiện hành |
-| Kiến tạo đặc trưng nghiêm ngặt | Phạm vi nghiêm ngặt với biểu diễn mới | 0,6706 | Cải thiện nhưng thấp hơn phạm vi vận hành |
 | A+B vận hành cố định | Trước phát hành theo quy ước vận hành | 0,710977 | Cấu hình đối chứng chính thức |
 | Bối cảnh ngân sách vận hành V2 | Trước phát hành theo quy ước vận hành | 0,7087 | Không vượt cấu hình đối chứng |
 | A+B kết hợp lịch sử franchise | Trước phát hành theo quy ước vận hành | **0,719483** | Mốc tham chiếu chính thức |
