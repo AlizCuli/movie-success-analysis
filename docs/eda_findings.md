@@ -23,10 +23,11 @@
 - Tỷ lệ thành công theo năm biến động trong mẫu. Mỗi năm chỉ có tối đa 100 phim
   phổ biến nên xu hướng không đại diện cho toàn bộ thị trường điện ảnh.
 
-Hai hình chính được tạo bởi `src/eda_movies.py`:
+Ba hình EDA chính được tạo bởi `src/eda_movies.py`:
 
 - `reports/figures/dataset_overview.png`;
-- `reports/figures/pre_release_feature_associations.png`.
+- `reports/figures/pre_release_spearman_heatmap.png`;
+- `reports/figures/success_by_genre_collection.png`.
 
 Các bảng tương ứng nằm trong `reports/tables/dataset_summary.csv`,
 `core_missingness.csv`, `pre_release_spearman.csv`,

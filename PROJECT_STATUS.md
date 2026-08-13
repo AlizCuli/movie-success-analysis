@@ -35,7 +35,7 @@ Mô hình cuối đã được đóng gói trong `models/` với 144 cây, ngư�
 
 - Quy trình thu thập, tiền xử lý, làm giàu dữ liệu, EDA, đánh giá và huấn luyện.
 - Notebook EDA chỉ sử dụng TMDb và không nhúng kết quả đầu ra dung lượng lớn.
-- Hai hình EDA chính và ba hình đánh giá XGBoost.
+- Ba hình EDA chính và ba hình đánh giá XGBoost.
 - Gói mô hình, mô hình XGBoost nguyên bản và manifest chứa checksum.
 - README trình bày cấu trúc dự án, quy trình và hướng dẫn tái lập.
 - Bộ kiểm tra giao ước không phụ thuộc dữ liệu cục bộ.

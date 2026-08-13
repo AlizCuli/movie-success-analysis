@@ -45,8 +45,8 @@ def create_summary(metrics: pd.Series, matrix: np.ndarray) -> None:
         ("Macro-F1", float(metrics["macro_f1"])),
         ("Accuracy", float(metrics["accuracy"])),
         ("Balanced accuracy", float(metrics["balanced_accuracy"])),
-        ("F1 lớp không thành công", float(metrics["f1_class_0"])),
-        ("F1 lớp thành công", float(f1_score(actual, predicted, pos_label=1))),
+        ("F1, unsuccessful class", float(metrics["f1_class_0"])),
+        ("F1, successful class", float(f1_score(actual, predicted, pos_label=1))),
     ]
     navy = "#193B5A"
     text = "#202B36"
@@ -65,7 +65,7 @@ def create_summary(metrics: pd.Series, matrix: np.ndarray) -> None:
         axis.text(0.94, y, f"{value:.6f}", ha="right", va="center", fontsize=12.5, fontweight="bold", color=navy)
         axis.plot([0.06, 0.94], [y - 0.070, y - 0.070], color=grid, linewidth=0.9)
 
-    axis.text(0.06, 0.09, f"Số phim được đánh giá: {int(metrics['rows']):,}", ha="left", va="center", fontsize=11.5, fontweight="bold", color=text)
+    axis.text(0.06, 0.09, f"Movies evaluated: {int(metrics['rows']):,}", ha="left", va="center", fontsize=11.5, fontweight="bold", color=text)
     figure.savefig(SUMMARY_OUTPUT, dpi=240, bbox_inches="tight", facecolor="white")
     plt.close(figure)
 
@@ -76,12 +76,12 @@ def create_confusion_matrix(matrix: np.ndarray) -> None:
     figure, axis = plt.subplots(figsize=(6.2, 5.7), constrained_layout=True)
     image = axis.imshow(matrix, cmap="Blues", vmin=0, vmax=int(matrix.max()))
     del image
-    labels = ["Không thành công", "Thành công"]
+    labels = ["Unsuccessful", "Successful"]
     axis.set_xticks([0, 1], labels=labels)
     axis.set_yticks([0, 1], labels=labels)
-    axis.set_xlabel("Dự đoán", fontsize=12)
-    axis.set_ylabel("Thực tế", fontsize=12)
-    axis.set_title("Ma trận nhầm lẫn XGBoost (outer-OOF)", fontsize=15, fontweight="bold", pad=12)
+    axis.set_xlabel("Predicted", fontsize=12)
+    axis.set_ylabel("Actual", fontsize=12)
+    axis.set_title("XGBoost Confusion Matrix (outer-OOF)", fontsize=15, fontweight="bold", pad=12)
     axis.tick_params(axis="both", labelsize=10.5)
     threshold = matrix.max() / 2
     for row in range(2):

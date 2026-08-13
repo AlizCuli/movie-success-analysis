@@ -15,10 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "reports" / "figures" / "tmdb_raw_feature_map.png"
 
 FEATURE_GROUPS = [
-    ("Tài chính\nvà thời gian", ["budget", "runtime", "release_date"]),
-    ("Nội dung\nphim", ["genres", "overview", "tagline", "keywords"]),
+    ("Financial and\ntime", ["budget", "runtime", "release_date"]),
+    ("Movie\ncontent", ["genres", "overview", "tagline", "keywords"]),
     (
-        "Ngôn ngữ\nvà sản xuất",
+        "Language and\nproduction",
         [
             "original_\nlanguage",
             "production_\ncountries",
@@ -27,10 +27,10 @@ FEATURE_GROUPS = [
         ],
     ),
     (
-        "Franchise\nvà đội ngũ",
+        "Franchise and\ncrew",
         ["belongs_to_\ncollection", "credits.cast", "credits.crew"],
     ),
-    ("Thông tin\nphát hành", ["release_dates"]),
+    ("Release\nmetadata", ["release_dates"]),
 ]
 
 
@@ -55,7 +55,7 @@ def main() -> None:
     axis.text(
         0.05,
         0.925,
-        "15 trường metadata đầu vào từ TMDb",
+        "15 TMDb metadata fields before feature engineering",
         ha="left",
         va="center",
         fontsize=23,

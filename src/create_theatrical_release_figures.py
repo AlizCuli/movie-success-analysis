@@ -26,28 +26,28 @@ MODEL_PATH = ROOT / "data" / "processed" / "movies_modeling.csv"
 ENRICHMENT_PATH = ROOT / "data" / "raw" / "tmdb_movie_enrichment.jsonl"
 FIGURES_DIR = ROOT / "reports" / "figures"
 
-SINGLE_OUTPUT = FIGURES_DIR / "Tỷ lệ thành công tài chính theo số quốc gia phát hành rạp..png"
-INTERACTION_OUTPUT = FIGURES_DIR / "ti le.png"
+SINGLE_OUTPUT = FIGURES_DIR / "success_rate_by_theatrical_release_breadth.png"
+INTERACTION_OUTPUT = FIGURES_DIR / "success_rate_by_release_breadth_and_collection.png"
 
-GROUPS = ["0–5 quốc gia", "6–15 quốc gia", "16–30 quốc gia", ">30 quốc gia"]
+GROUPS = ["0-5 markets", "6-15 markets", "16-30 markets", ">30 markets"]
 BIN_EDGES = [-1, 5, 15, 30, np.inf]
 
 EXPECTED_SINGLE = {
-    "0–5 quốc gia": (42, 28.6),
-    "6–15 quốc gia": (210, 49.5),
-    "16–30 quốc gia": (446, 70.9),
-    ">30 quốc gia": (948, 77.7),
+    "0-5 markets": (42, 28.6),
+    "6-15 markets": (210, 49.5),
+    "16-30 markets": (446, 70.9),
+    ">30 markets": (948, 77.7),
 }
 
 EXPECTED_INTERACTION = {
-    ("0–5 quốc gia", 0): (28, 21.4),
-    ("0–5 quốc gia", 1): (14, 42.9),
-    ("6–15 quốc gia", 0): (146, 44.5),
-    ("6–15 quốc gia", 1): (64, 60.9),
-    ("16–30 quốc gia", 0): (278, 62.2),
-    ("16–30 quốc gia", 1): (168, 85.1),
-    (">30 quốc gia", 0): (485, 65.4),
-    (">30 quốc gia", 1): (463, 90.7),
+    ("0-5 markets", 0): (28, 21.4),
+    ("0-5 markets", 1): (14, 42.9),
+    ("6-15 markets", 0): (146, 44.5),
+    ("6-15 markets", 1): (64, 60.9),
+    ("16-30 markets", 0): (278, 62.2),
+    ("16-30 markets", 1): (168, 85.1),
+    (">30 markets", 0): (485, 65.4),
+    (">30 markets", 1): (463, 90.7),
 }
 
 
@@ -104,7 +104,7 @@ def aggregate(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def pct(value: float) -> str:
-    return f"{value:.1f}%".replace(".", ",")
+    return f"{value:.1f}%"
 
 
 def create_single(single: pd.DataFrame) -> None:
@@ -112,13 +112,13 @@ def create_single(single: pd.DataFrame) -> None:
     figure, axis = plt.subplots(figsize=(8.2, 4.8), facecolor="white")
     bars = axis.bar(GROUPS, single["success_rate"] * 100, color=colors, width=0.58)
     axis.set_ylim(0, 100)
-    axis.set_ylabel("Tỷ lệ phim đạt nhãn thành công (%)", fontsize=11)
-    axis.set_xlabel("Nhóm theatrical_country_count", fontsize=11, labelpad=10)
-    axis.set_title("Tỷ lệ thành công tài chính theo độ rộng phát hành rạp", fontsize=14, fontweight="bold", pad=14)
+    axis.set_ylabel("Observed success rate (%)", fontsize=11)
+    axis.set_xlabel("Theatrical release breadth", fontsize=11, labelpad=10)
+    axis.set_title("Observed financial success by theatrical release breadth", fontsize=14, fontweight="bold", pad=14)
     axis.text(
         0.5,
         1.01,
-        "theatrical_country_count = số quốc gia có bản ghi phát hành rạp trên TMDb",
+        "Theatrical release breadth = countries with a TMDb theatrical release record",
         transform=axis.transAxes,
         ha="center",
         va="bottom",
@@ -141,7 +141,7 @@ def create_single(single: pd.DataFrame) -> None:
     axis.text(
         0.5,
         -0.22,
-        "Tập modeling gồm 1.646 phim; nhãn: revenue ≥ 2 × budget.",
+        "Modeling cohort: 1,646 movies; success label: revenue >= 2 * budget.",
         transform=axis.transAxes,
         ha="center",
         va="top",
@@ -155,7 +155,7 @@ def create_single(single: pd.DataFrame) -> None:
 
 def create_interaction(interaction: pd.DataFrame) -> None:
     colors = {0: "#7E9ACB", 1: "#159B93"}
-    labels = {0: "Không thuộc collection", 1: "Thuộc collection"}
+    labels = {0: "Not in a collection", 1: "In a collection"}
     x = np.arange(len(GROUPS))
     width = 0.34
     figure, axis = plt.subplots(figsize=(8.0, 5.0), facecolor="white")
@@ -179,9 +179,9 @@ def create_interaction(interaction: pd.DataFrame) -> None:
             )
     axis.set_xticks(x, GROUPS)
     axis.set_ylim(0, 105)
-    axis.set_ylabel("Tỷ lệ phim đạt nhãn thành công (%)", fontsize=11)
-    axis.set_xlabel("Nhóm theatrical_country_count", fontsize=11, labelpad=10)
-    axis.set_title("Tỷ lệ thành công theo độ rộng phát hành và collection", fontsize=16, fontweight="bold", pad=14)
+    axis.set_ylabel("Observed success rate (%)", fontsize=11)
+    axis.set_xlabel("Theatrical release breadth", fontsize=11, labelpad=10)
+    axis.set_title("Observed success by release breadth and collection status", fontsize=16, fontweight="bold", pad=14)
     axis.legend(frameon=False, loc="upper left", ncol=2, fontsize=10)
     axis.grid(axis="y", color="#D9E1E8", linestyle="--", linewidth=0.8)
     axis.set_axisbelow(True)
@@ -189,7 +189,7 @@ def create_interaction(interaction: pd.DataFrame) -> None:
     axis.text(
         0.5,
         -0.20,
-        "Số liệu tính trên 1.646 phim modeling; collection được xác định từ metadata TMDb.",
+        "Based on 1,646 modeling movies; collection status comes from TMDb metadata.",
         transform=axis.transAxes,
         ha="center",
         va="top",
