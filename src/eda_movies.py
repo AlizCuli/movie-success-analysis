@@ -168,8 +168,8 @@ def plot_dataset_overview(
         display_missing["missing_rate"] * 100,
         color=PRIMARY_COLOR,
     )
-    axes[0].set_title("A. Tỷ lệ thiếu ở các trường cốt lõi")
-    axes[0].set_xlabel("Tỷ lệ thiếu (%)")
+    axes[0].set_title("A. Missingness in core fields")
+    axes[0].set_xlabel("Missing rate (%)")
     axes[0].set_ylabel("")
     for row, value in enumerate(display_missing["missing_rate"] * 100):
         axes[0].text(value + 0.7, row, f"{value:.1f}%", va="center", fontsize=9)
@@ -180,8 +180,8 @@ def plot_dataset_overview(
         class_counts.reindex([0, 1]).to_numpy(),
         color=[FAILURE_COLOR, SECONDARY_COLOR],
     )
-    axes[1].set_title("B. Phân bố nhãn trong tập modeling")
-    axes[1].set_ylabel("Số phim")
+    axes[1].set_title("B. Class balance in modeling cohort")
+    axes[1].set_ylabel("Movies")
     for bar, count in zip(bars, class_counts.reindex([0, 1]).to_numpy()):
         axes[1].text(
             bar.get_x() + bar.get_width() / 2,
@@ -193,7 +193,7 @@ def plot_dataset_overview(
         )
     axes[1].set_ylim(0, class_counts.max() * 1.16)
 
-    figure.suptitle("Tổng quan chất lượng dữ liệu TMDb", fontsize=15, fontweight="bold")
+    figure.suptitle("TMDb Data Quality Overview", fontsize=15, fontweight="bold")
     figure.tight_layout()
     return save_figure(figure, "dataset_overview.png")
 
@@ -222,7 +222,7 @@ def plot_feature_associations(
     axis_correlation.tick_params(axis="x", labelsize=6.0, pad=1)
     axis_correlation.tick_params(axis="y", labelsize=6.2)
     axis_correlation.set_title(
-        "A. Tương quan Spearman giữa các biến số",
+        "A. Spearman associations among variables",
         loc="left",
         pad=7,
         fontsize=8.2,
@@ -279,7 +279,7 @@ def plot_feature_associations(
             rates * 100,
             height=bar_height,
             color=colors[flag],
-            label=f"is_collection = {flag}",
+            label="In a collection" if flag else "Not in a collection",
         )
         for bar, rate, count in zip(bars, rates, counts):
             if np.isnan(rate):
@@ -294,9 +294,9 @@ def plot_feature_associations(
     axis_groups.set_yticks(positions, labels=genre_order)
     axis_groups.set_xlim(0, 112)
     axis_groups.set_ylim(-0.55, len(genre_order) + 0.60)
-    axis_groups.set_xlabel("Tỷ lệ is_successful (%)", fontsize=6.8)
+    axis_groups.set_xlabel("Observed success rate (%)", fontsize=6.8)
     axis_groups.set_title(
-        "B. Tỷ lệ is_successful theo primary_genre\nvà is_collection",
+        "B. Observed success rate by primary genre\nand collection status",
         loc="left",
         pad=7,
         fontsize=8.2,
@@ -318,7 +318,7 @@ def plot_feature_associations(
     axis_groups.text(
         0.5,
         -0.22,
-        "Panel B: 8 primary_genre có nhiều phim nhất.",
+        "Panel B: eight most common primary genres.",
         transform=axis_groups.transAxes,
         ha="center",
         va="top",
@@ -327,7 +327,7 @@ def plot_feature_associations(
     )
 
     figure.suptitle(
-        "Mối liên hệ giữa đặc trưng trước phát hành và thành công tài chính",
+        "Pre-release variables and financial success",
         x=0.075,
         y=0.965,
         ha="left",
@@ -335,7 +335,7 @@ def plot_feature_associations(
         fontweight="bold",
     )
     figure.subplots_adjust(top=0.84, bottom=0.25, left=0.145, right=0.975)
-    return save_figure(figure, "pre_release_feature_associations.png")
+    return save_figure(figure, "pre_release_association_overview.png")
 
 
 def plot_spearman_heatmap(correlation: pd.DataFrame) -> Path:
@@ -357,7 +357,7 @@ def plot_spearman_heatmap(correlation: pd.DataFrame) -> Path:
     axis.tick_params(axis="x", labelsize=7.2, pad=2)
     axis.tick_params(axis="y", labelsize=8.0)
     axis.set_title(
-        "Tương quan Spearman giữa các biến số",
+        "Spearman associations among descriptive variables",
         loc="left",
         pad=10,
         fontsize=11,
@@ -430,7 +430,7 @@ def plot_genre_collection_rates(genre_collection: pd.DataFrame) -> Path:
             rates * 100,
             height=bar_height,
             color=colors[flag],
-            label=f"is_collection = {flag}",
+            label="In a collection" if flag else "Not in a collection",
         )
         for bar, rate, count in zip(bars, rates, counts):
             if np.isnan(rate):
@@ -446,9 +446,9 @@ def plot_genre_collection_rates(genre_collection: pd.DataFrame) -> Path:
     axis.set_yticks(positions, labels=genre_order)
     axis.set_xlim(0, 113)
     axis.set_ylim(-0.55, len(genre_order) + 0.60)
-    axis.set_xlabel("Tỷ lệ is_successful (%)", fontsize=8)
+    axis.set_xlabel("Observed success rate (%)", fontsize=8)
     axis.set_title(
-        "Tỷ lệ is_successful theo primary_genre\nvà is_collection",
+        "Observed success rate by primary genre\nand collection status",
         loc="left",
         pad=9,
         fontsize=10,
@@ -470,7 +470,7 @@ def plot_genre_collection_rates(genre_collection: pd.DataFrame) -> Path:
     axis.text(
         0.5,
         -0.20,
-        "8 primary_genre có nhiều phim nhất.",
+        "Eight most common primary genres.",
         transform=axis.transAxes,
         ha="center",
         va="top",

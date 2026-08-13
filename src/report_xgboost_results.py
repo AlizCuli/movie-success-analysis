@@ -131,11 +131,11 @@ def main(include_feature_importance: bool = True) -> None:
 
     figure, axis = plt.subplots(figsize=(6, 5))
     sns.heatmap(matrix, annot=True, fmt="d", cmap="Blues", cbar=False, ax=axis)
-    axis.set_title("Ma trận nhầm lẫn outer-OOF của XGBoost")
-    axis.set_xlabel("Dự đoán")
-    axis.set_ylabel("Thực tế")
-    axis.set_xticklabels(["Không thành công", "Thành công"])
-    axis.set_yticklabels(["Không thành công", "Thành công"], rotation=0)
+    axis.set_title("XGBoost Confusion Matrix (outer-OOF)")
+    axis.set_xlabel("Predicted")
+    axis.set_ylabel("Actual")
+    axis.set_xticklabels(["Unsuccessful", "Successful"])
+    axis.set_yticklabels(["Unsuccessful", "Successful"], rotation=0)
     save_figure(figure, "xgboost_confusion_matrix.png")
 
     figure, axis = plt.subplots(figsize=(8, 5))
@@ -145,11 +145,11 @@ def main(include_feature_importance: bool = True) -> None:
         pooled_macro_f1,
         color="#E76F51",
         linestyle="--",
-        label=f"Pooled {pooled_macro_f1:.6f}",
+        label=f"Pooled score: {pooled_macro_f1:.6f}",
     )
     axis.set_ylim(0, 1)
-    axis.set_title("Macro-F1 theo fold kiểm định ngoài")
-    axis.set_xlabel("Fold kiểm định ngoài")
+    axis.set_title("Macro-F1 by outer validation fold")
+    axis.set_xlabel("Outer validation fold")
     axis.set_ylabel("Macro-F1")
     axis.legend()
     save_figure(figure, "xgboost_fold_macro_f1.png")
@@ -169,13 +169,13 @@ def main(include_feature_importance: bool = True) -> None:
     top["display_feature"] = (
         top["feature"]
         .str.replace(r"^(numeric|categorical)__", "", regex=True)
-        .str.replace("_infrequent_sklearn", " = nhóm ít gặp", regex=False)
+        .str.replace("_infrequent_sklearn", " = infrequent group", regex=False)
     )
     figure, axis = plt.subplots(figsize=(10, 7))
     axis.barh(top["display_feature"], top["importance"], color="#2A9D8F")
-    axis.set_title("20 đặc trưng có importance cao nhất của model cuối")
-    axis.set_xlabel("Mức độ quan trọng của XGBoost")
-    axis.set_ylabel("Đặc trưng sau tiền xử lý")
+    axis.set_title("Top 20 feature importances in the finalized model")
+    axis.set_xlabel("XGBoost feature importance")
+    axis.set_ylabel("Transformed feature")
     save_figure(figure, "xgboost_feature_importance.png")
 
     pooled = metrics(actual, predicted)

@@ -1,204 +1,206 @@
-# Dự đoán khả năng thành công tài chính của phim dựa trên thông tin có sẵn trước khi phát hành
+# Movie Success Analysis
 
-Dự án học phần **Phân tích Dữ liệu**, **Trường Đại học Mở Thành phố Hồ Chí Minh**.
+> Can information available before a movie's release help identify films that meet a project-defined financial-success threshold?
 
-**Sinh viên thực hiện**
+[![Repository checks](https://github.com/AlizCuli/movie-success-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/AlizCuli/movie-success-analysis/actions/workflows/ci.yml)
+[![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
-- Phan Tấn Phúc — 2351060029
-- Phạm Nguyễn Bảo Vi — 2351060041
+An end-to-end, individual data analysis project using the TMDb Official API. It combines data collection, validation, exploratory analysis, leakage-safe feature engineering, and nested cross-validation to evaluate pre-release signals of movie financial success.
 
-## Tổng quan
+| 2,597 movies collected | 1,646 modeling observations | 2000-2025 snapshot | 0.719483 Macro-F1 |
+| :--- | :--- | :--- | :--- |
+| TMDb Official API | Valid financial fields | 100 popular movies/year maximum | Nested outer-OOF evaluation |
 
-Nghiên cứu đánh giá mức độ mà thông tin có sẵn trước khi phát hành cho phép dự
-đoán khả năng thành công tài chính của phim. Bài toán được biểu diễn dưới dạng
-phân loại nhị phân và giải quyết bằng XGBoost:
+## Project Overview
+
+The project asks whether movie metadata available before release can help distinguish films that achieve a return of at least two times their budget. The workflow is intentionally framed as data analysis first: acquire real-world API data, validate the usable population, investigate patterns, engineer pre-release features, and then evaluate their predictive value without leaking post-release outcomes into the model.
+
+## Analytical Question
+
+Within the TMDb 2000-2025 research snapshot, how informative are operationally pre-release movie characteristics for classifying whether:
 
 ```text
-is_successful = 1 nếu revenue >= 2 × budget
-is_successful = 0 nếu revenue < 2 × budget
+is_successful = 1 if revenue >= 2 * budget
+is_successful = 0 otherwise
 ```
 
-`budget` là đặc trưng đầu vào; `revenue` chỉ được sử dụng để xác lập nhãn. Mô
-hình không sử dụng `popularity`, điểm đánh giá, lượt bình chọn, `profit`, ROI
-hoặc bất kỳ biến dẫn xuất nào từ doanh thu làm đặc trưng dự báo.
+`revenue` constructs the label only. It is never a model input.
 
-### Câu hỏi nghiên cứu
+## Project at a Glance
 
-Trong phạm vi dữ liệu TMDb giai đoạn 2000–2025, các thông tin có thể biết trước
-khi phát hành cho phép dự đoán khả năng một bộ phim đạt doanh thu tối thiểu gấp
-hai lần ngân sách ở mức độ nào, và những nhóm đặc trưng nào cung cấp tín hiệu
-dự báo đáng kể nhất?
+| Item | Verified value |
+| --- | --- |
+| Data source | TMDb Official API |
+| Research period | 2000-2025 |
+| Movies collected | 2,597 |
+| Modeling sample | 1,646 movies |
+| Financial-success criterion | Revenue >= 2 * budget |
+| Final model | XGBoost with operationally pre-release features |
+| Evaluation protocol | 5 outer x 4 inner nested stratified cross-validation |
+| Primary metric | Macro-F1 |
+| Official Macro-F1 | 0.719483 |
 
-## Kết quả chính
+## Data Pipeline
 
-Cấu hình tham chiếu chính thức là **XGBoost sử dụng thông tin trước phát hành
-theo phạm vi vận hành, kết hợp lịch sử franchise theo thời điểm**. Mô hình được
-đánh giá bằng kiểm định chéo phân tầng lồng nhau gồm 5 vòng ngoài và 4 vòng
-trong trên 1.646 phim.
+```mermaid
+flowchart LR
+    A["TMDb Official API"] --> B["Data collection"]
+    B --> C["Raw TMDb snapshot"]
+    C --> D["Cleaning and validation"]
+    D --> E["Modeling dataset"]
+    E --> F["EDA and feature engineering"]
+    F --> G["XGBoost"]
+    G --> H["Nested evaluation and reporting"]
+```
 
-| Chỉ số trên dự đoán ngoài mẫu gộp | Giá trị |
+The repository keeps row-level TMDb data local and version-controls code, aggregate tables, model artifacts, figures, and validation checks instead.
+
+## Exploratory Data Analysis
+
+The EDA focuses on coverage, class balance, and associations among variables that are in the project-defined operational pre-release scope. These charts describe the sampled TMDb snapshot; they do not establish causal effects.
+
+### Data Quality and Modeling Cohort
+
+![Missingness in core TMDb fields and class balance in the modeling cohort](reports/figures/dataset_overview.png)
+
+Budget and revenue are the primary coverage constraint: 32.9% and 32.3% of the collected records, respectively, are missing these fields. Requiring valid budget, revenue, runtime, and release date yields the 1,646-film modeling cohort, in which 29.0% are labelled unsuccessful.
+
+### Genre and Collection Patterns
+
+![Observed financial-success rate by primary genre and collection status](reports/figures/success_by_genre_collection.png)
+
+Across the eight most common primary genres, films tagged as part of a collection have higher observed success rates in this sample. For example, Action is 81.7% for collection films versus 48.5% for non-collection films; Adventure is 84.2% versus 46.2%. The chart reports group sizes because some genre and collection combinations are small.
+
+### Theatrical Release Breadth
+
+![Observed financial-success rate by theatrical release breadth](reports/figures/success_rate_by_theatrical_release_breadth.png)
+
+Observed success rates rise from 28.6% in the 0-5-market group (n=42) to 77.7% in the more-than-30-market group (n=948). This is an association in the TMDb snapshot, not evidence that increasing market count alone causes success.
+
+## Key Insights
+
+1. **Financial fields determine usable coverage.** Missing budget and revenue exclude roughly one third of the collected movies from target construction, so the final cohort represents films with usable TMDb financial metadata rather than all movies released in the period.
+2. **Collection status is a meaningful descriptive signal, but not a causal claim.** Its Spearman association with the success label is 0.283, the largest among the basic pre-release variables summarized in [`pre_release_spearman.csv`](reports/tables/pre_release_spearman.csv). The genre comparison shows why interactions matter instead of relying on a genre-only rule.
+3. **Release breadth is strongly associated with the outcome.** The 49.1 percentage-point difference between the smallest and largest theatrical-market groups should be interpreted with context: release breadth may proxy for distribution decisions, scale, or other unobserved factors.
+4. **No single basic feature is decisive.** The next-largest associations with the label are theatrical-country count (0.245) and release-event count (0.192). This supports combining multiple pre-release signals in a validated model rather than making decisions from one heuristic.
+
+## Predictive Modeling
+
+The finalized XGBoost configuration combines basic movie metadata, TMDb enrichment, and time-aware franchise-history features within the project's operational pre-release scope. It uses 51 raw pre-release features that expand to 160 transformed features after preprocessing.
+
+The configuration was selected through documented experiments, including rejected feature sets and tuning decisions, in the [experiment registry](docs/tuning_registry.md). The final benchmark uses Macro-F1 because the modeling cohort is imbalanced (477 unsuccessful vs. 1,169 successful movies).
+
+### Results
+
+![Official XGBoost nested outer-OOF performance summary](reports/figures/xgboost_performance_summary.png)
+
+| Out-of-sample metric | Score |
 | --- | ---: |
-| Macro-F1 | **0,719483** |
-| F1 lớp không thành công | 0,605128 |
-| Recall lớp không thành công | 0,618449 |
-| Balanced accuracy | 0,722398 |
+| Macro-F1 | **0.719483** |
+| F1, unsuccessful class | 0.605128 |
+| Balanced Accuracy | 0.722398 |
+| Accuracy | 0.766100 |
 
-Gói mô hình nằm trong [`models/`](models/README.md). Các chỉ số trên là kết quả
-ngoài mẫu, không phải kết quả huấn luyện của mô hình được khớp trên toàn bộ dữ
-liệu.
+These are pooled predictions from the five outer folds of nested cross-validation, not training performance. The model is stronger on the successful class (F1 = 0.833837) than on the unsuccessful class, so the reported Macro-F1 and class-specific F1 remain more informative than accuracy alone.
 
-## Dữ liệu
+## Leakage-Safe Evaluation
 
-Nguồn dữ liệu chính thức duy nhất là **TMDb Official API**. Ảnh chụp dữ liệu
-nghiên cứu gồm 2.597 phim phát hành trong giai đoạn 2000–2025, với tối đa 100
-phim phổ biến mỗi năm. Tập dữ liệu mô hình hóa gồm 1.646 phim có `budget`,
-`revenue`, `runtime` và `release_date` hợp lệ.
+The reported result is designed to avoid an inflated estimate of predictive usefulness.
 
-Dữ liệu cấp phim không được phân phối trong repository công khai. Việc tái tạo
-dữ liệu yêu cầu TMDb API Read Access Token. Chính sách phân phối và lược đồ đầu
-ra được trình bày tại
-[`data/README.md`](data/README.md) và [`docs/data_sources.md`](docs/data_sources.md).
-
-> This product uses the TMDB API but is not endorsed or certified by TMDB.
+- `revenue` creates the target and is excluded from predictors.
+- Post-release fields such as popularity, ratings, vote counts, profit, ROI, and revenue-derived variables are excluded.
+- Imputation, encoding, and feature engineering are fit within the relevant training folds.
+- Tuning and threshold selection happen in the four inner folds; the five outer folds are reserved for final evaluation.
+- Franchise-history features only use movies released earlier than the film being represented.
+- The project documents its metadata scope honestly: TMDb is a current snapshot, not a complete point-in-time historical archive.
 
 ## Project Structure
 
 ```text
 movie-success-analysis/
-├── .github/workflows/        # Kiểm tra tự động khi cập nhật mã nguồn
-├── data/                     # Cấu trúc dữ liệu cục bộ; dữ liệu thật không được phép công bố
-├── docs/                     # Phương pháp, quyết định và kết quả nghiên cứu
-├── models/                   # Gói XGBoost chính thức, manifest và checksum
-├── notebooks/                # Notebook EDA có thể tái lập
-├── reports/
-│   ├── figures/              # Hình tổng hợp dùng trong báo cáo
-│   └── tables/               # Bảng chỉ số tổng hợp, không chứa dữ liệu từng phim
-├── src/                      # Mã nguồn của từng công đoạn xử lý
-├── tests/                    # Kiểm tra giao ước không cần dữ liệu cục bộ
-├── .env.example              # Mẫu tên biến môi trường, không chứa token thật
-├── requirements.txt          # Phiên bản thư viện đã khóa
-└── run_pipeline.py           # Điểm thực thi chung cho toàn bộ quy trình
+|-- data/             # Local data structure; row-level TMDb files are excluded from Git
+|-- docs/             # Methodology, data notes, experiments, and detailed results
+|-- models/           # Official XGBoost bundle, manifest, and checksums
+|-- notebooks/        # Reproducible EDA notebook
+|-- reports/          # Public aggregate tables and figures
+|-- src/              # Collection, preprocessing, EDA, modeling, and reporting code
+|-- tests/            # Repository contract tests
+|-- run_pipeline.py   # Pipeline entry point
+`-- requirements.txt  # Pinned dependencies
 ```
 
-## Pipeline Workflow
+## Quick Start
 
-```mermaid
-flowchart LR
-    A["TMDb Official API"] --> B["Thu thập dữ liệu"]
-    B --> C["Dữ liệu gốc"]
-    C --> D["Tiền xử lý"]
-    D --> E["Dữ liệu sạch"]
-    E --> F["EDA và đặc trưng"]
-    F --> G["XGBoost"]
-    G --> H["Đánh giá và lưu"]
-```
-
-## How to Run
-
-### 1. Chuẩn bị môi trường
-
-Yêu cầu Python **3.14** và Git.
-
-```powershell
-git clone https://github.com/AlizCuli/movie-success-analysis.git
-cd movie-success-analysis
-py -3.14 -m venv .venv
-& '.\.venv\Scripts\python.exe' -m pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-Trên macOS/Linux, thay lệnh tạo và gọi môi trường bằng:
+Use Python 3.14, then create an isolated environment and install the pinned dependencies.
 
 ```bash
-python3.14 -m venv .venv
-./.venv/bin/python -m pip install -r requirements.txt
-cp .env.example .env
+git clone https://github.com/AlizCuli/movie-success-analysis.git
+cd movie-success-analysis
+
+python -m venv .venv
 ```
 
-Khai báo API Read Access Token trong `.env`:
+Activate the environment:
+
+```bash
+# Windows PowerShell
+.venv\\Scripts\\Activate.ps1
+
+# macOS/Linux
+source .venv/bin/activate
+```
+
+Install dependencies and configure a local TMDb API token:
+
+```bash
+pip install -r requirements.txt
+# Windows PowerShell: Copy-Item .env.example .env
+# macOS/Linux: cp .env.example .env
+```
+
+Set the token in `.env` without committing the file:
 
 ```text
 TMDB_API_TOKEN=your_read_access_token_here
 ```
 
-File `.env` phải được giữ ngoài Git và token không được ghi vào nhật ký chạy.
+Run the full workflow:
 
-### 2. Chạy quy trình
-
-Chạy toàn bộ quy trình:
-
-```powershell
-& '.\.venv\Scripts\python.exe' run_pipeline.py all
+```bash
+python run_pipeline.py all
 ```
 
-Hoặc chạy từng chặng độc lập:
+Individual stages are available as `collect`, `preprocess`, `enrich`, `eda`, `evaluate`, `train`, `report`, and `figures`. `evaluate` runs nested cross-validation and is the most computationally expensive stage. A fresh clone can inspect the committed aggregate reports and PNG figures immediately, but regenerating row-level artifacts requires a local TMDb snapshot.
 
-```powershell
-& '.\.venv\Scripts\python.exe' run_pipeline.py collect
-& '.\.venv\Scripts\python.exe' run_pipeline.py preprocess
-& '.\.venv\Scripts\python.exe' run_pipeline.py enrich
-& '.\.venv\Scripts\python.exe' run_pipeline.py eda
-& '.\.venv\Scripts\python.exe' run_pipeline.py evaluate
-& '.\.venv\Scripts\python.exe' run_pipeline.py train
-& '.\.venv\Scripts\python.exe' run_pipeline.py report
-& '.\.venv\Scripts\python.exe' run_pipeline.py figures
-```
+## Documentation
 
-`collect` sử dụng điểm kiểm tra để hỗ trợ tiếp tục quá trình thu thập và tránh
-tải lại file đã hoàn chỉnh. `evaluate` thực hiện kiểm định chéo lồng nhau nên có
-chi phí tính toán lớn nhất. Dữ liệu và dự đoán cấp từng phim được lưu cục bộ
-theo quy tắc trong `.gitignore`.
+- [Data source and collection scope](docs/data_sources.md)
+- [EDA findings](docs/eda_findings.md)
+- [Model input schema](docs/model_input_schema.md)
+- [Official XGBoost results](docs/xgboost_results.md)
+- [Experiment registry](docs/tuning_registry.md)
+- [Report assets and figure reproduction](reports/README.md)
+- [Model package details](models/README.md)
 
-`figures` tái tạo chín hình trong `reports/figures/` từ dữ liệu cục bộ và các
-artifact tổng hợp đã được theo dõi. Dữ liệu cấp phim không nằm trong bản clone
-công khai, nên cần hoàn tất các chặng `collect`–`preprocess`–`enrich` trước khi
-chạy chặng này; các PNG hiện có vẫn có thể xem trực tiếp.
+## Limitations
 
-TMDb được cập nhật liên tục nên ảnh chụp dữ liệu mới có thể khác quy mô
-2.597/1.646 dòng. Quy trình xử lý thích ứng với số dòng thực tế; kết quả
-0,719483 chỉ có thể được tái lập chính xác với cùng ảnh chụp dữ liệu và các
-phiên bản thư viện được ghi trong manifest của mô hình.
+- The collection strategy samples at most 100 popular movies per year and is not a random sample of the full movie market.
+- Missing TMDb financial values reduce the modeling cohort from 2,597 collected movies to 1,646 observations.
+- TMDb metadata is a current snapshot, not a complete historical point-in-time archive for every field.
+- The financial-success threshold, revenue >= 2 * budget, is a project-defined classification rule.
+- The unsuccessful class has lower predictive performance, so the model should not be used as a stand-alone high-stakes financial decision tool.
+- Associations in the EDA are descriptive and may reflect confounding or sample-selection effects.
 
-### 3. Kiểm tra kho mã nguồn
+## Project Context
 
-```powershell
-& '.\.venv\Scripts\python.exe' -m compileall -q src tests run_pipeline.py
-& '.\.venv\Scripts\python.exe' -m unittest discover -s tests -v
-```
+Developed as an individual Data Analysis project at Ho Chi Minh City Open University and refined into an end-to-end data analytics portfolio project.
 
-### 4. Suy luận bằng mô hình đóng gói
+## Author
 
-Xem lược đồ đầu vào:
+**Phan Tấn Phúc**<br>
+Data Science Student, Ho Chi Minh City Open University<br>
+GitHub: [@AlizCuli](https://github.com/AlizCuli)
 
-```powershell
-& '.\.venv\Scripts\python.exe' src\predict_xgboost.py --show-schema
-```
+## TMDb Attribution
 
-Thực hiện dự đoán trên CSV siêu dữ liệu đã được cấu trúc hóa:
-
-```powershell
-& '.\.venv\Scripts\python.exe' src\predict_xgboost.py input.csv output.csv
-```
-
-Chi tiết về các trường bắt buộc và giới hạn suy luận được trình bày trong
-[`docs/model_input_schema.md`](docs/model_input_schema.md).
-
-## Tài liệu và kết quả chính
-
-- [`notebooks/01_eda.ipynb`](notebooks/01_eda.ipynb): EDA TMDb-only.
-- [`docs/report_outline.md`](docs/report_outline.md): bố cục báo cáo học thuật.
-- [`docs/xgboost_results.md`](docs/xgboost_results.md): kết quả tham chiếu.
-- [`docs/tuning_registry.md`](docs/tuning_registry.md): lịch sử thí nghiệm để
-  tránh lặp lại hướng đã bị loại.
-
-## Giới hạn
-
-- Mẫu tối đa 100 phim phổ biến mỗi năm, không phải mẫu ngẫu nhiên của toàn thị
-  trường.
-- `budget` và `revenue` trên TMDb còn thiếu đáng kể; chỉ phim có biến mục tiêu
-  hợp lệ mới được đưa vào tập dữ liệu mô hình hóa.
-- Siêu dữ liệu TMDb là ảnh chụp ở thời điểm thu thập, không phải kho lưu trữ
-  lịch sử chứng minh thời điểm công bố của mọi trường. Vì vậy, nghiên cứu sử
-  dụng phạm vi trước phát hành theo quy ước vận hành.
-- `revenue >= 2 × budget` là tiêu chuẩn thành công tài chính được xác lập trong
-  phạm vi nghiên cứu.
+This product uses the TMDB API but is not endorsed or certified by TMDB.
