@@ -1,6 +1,6 @@
-"""Điểm vào duy nhất để chạy pipeline Movie Success Analysis.
+"""Single entry point for the Movie Success Analysis workflow.
 
-Ví dụ:
+Examples:
     python run_pipeline.py all
     python run_pipeline.py preprocess
 """
@@ -46,7 +46,7 @@ def main() -> None:
     parser.add_argument(
         "stage",
         choices=[*STAGES, "all"],
-        help="Công đoạn cần chạy. Dùng 'all' để chạy toàn bộ theo đúng thứ tự.",
+        help="Pipeline stage to run. Use 'all' for the complete ordered workflow.",
     )
     arguments = parser.parse_args()
 
@@ -56,7 +56,7 @@ def main() -> None:
         for script in STAGES[stage]:
             run_script(script)
 
-    print("\nPipeline hoàn tất.")
+    print("\nPipeline completed.")
 
 
 if __name__ == "__main__":

@@ -25,9 +25,12 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "data" / "processed" / "movies_modeling.csv"
 ENRICHMENT_PATH = ROOT / "data" / "raw" / "tmdb_movie_enrichment.jsonl"
 FIGURES_DIR = ROOT / "reports" / "figures"
+TABLES_DIR = ROOT / "reports" / "tables"
 
 SINGLE_OUTPUT = FIGURES_DIR / "success_rate_by_theatrical_release_breadth.png"
 INTERACTION_OUTPUT = FIGURES_DIR / "success_rate_by_release_breadth_and_collection.png"
+SINGLE_TABLE_OUTPUT = TABLES_DIR / "success_by_theatrical_release_breadth.csv"
+INTERACTION_TABLE_OUTPUT = TABLES_DIR / "success_by_release_breadth_and_collection.csv"
 
 GROUPS = ["0-5 markets", "6-15 markets", "16-30 markets", ">30 markets"]
 BIN_EDGES = [-1, 5, 15, 30, np.inf]
@@ -62,13 +65,13 @@ def load_data() -> pd.DataFrame:
     required = ["tmdb_id", "theatrical_country_count", "is_collection"]
     missing = sorted(set(required) - set(enrichment.columns))
     if missing:
-        raise ValueError(f"Thiếu cột enrichment: {missing}")
+        raise ValueError(f"Missing enrichment columns: {missing}")
     if modeling["tmdb_id"].duplicated().any():
-        raise ValueError("tmdb_id bị trùng trong tập modeling.")
+        raise ValueError("Duplicate tmdb_id values in the modeling cohort.")
     enrichment = enrichment[required].drop_duplicates("tmdb_id")
     merged = modeling.merge(enrichment, on="tmdb_id", how="inner", validate="1:1")
     if len(merged) != len(modeling):
-        raise ValueError("Không ghép đủ phim modeling với enrichment.")
+        raise ValueError("The modeling cohort could not be fully joined to enrichment.")
 
     merged["release_group"] = pd.cut(
         merged["theatrical_country_count"],
@@ -95,11 +98,11 @@ def aggregate(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     for group, (count, rate) in EXPECTED_SINGLE.items():
         observed = single.loc[group]
         if int(observed["movie_count"]) != count or not np.isclose(observed["success_rate"] * 100, rate, atol=0.06):
-            raise ValueError(f"Số liệu single không khớp ở nhóm {group}: {observed.to_dict()}")
+            raise ValueError(f"Single-table values do not match for {group}: {observed.to_dict()}")
     for key, (count, rate) in EXPECTED_INTERACTION.items():
         observed = interaction.loc[key]
         if int(observed["movie_count"]) != count or not np.isclose(observed["success_rate"] * 100, rate, atol=0.06):
-            raise ValueError(f"Số liệu interaction không khớp ở nhóm {key}: {observed.to_dict()}")
+            raise ValueError(f"Interaction-table values do not match for {key}: {observed.to_dict()}")
     return single, interaction
 
 
@@ -201,14 +204,26 @@ def create_interaction(interaction: pd.DataFrame) -> None:
     plt.close(figure)
 
 
+def save_aggregate_tables(single: pd.DataFrame, interaction: pd.DataFrame) -> None:
+    """Write row-free tables that provide the evidence behind both figures."""
+    TABLES_DIR.mkdir(parents=True, exist_ok=True)
+    single.reset_index().rename(columns={"index": "release_group"}).to_csv(
+        SINGLE_TABLE_OUTPUT, index=False
+    )
+    interaction.reset_index().to_csv(INTERACTION_TABLE_OUTPUT, index=False)
+
+
 def main() -> None:
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     data = load_data()
     single, interaction = aggregate(data)
+    save_aggregate_tables(single, interaction)
     create_single(single)
     create_interaction(interaction)
-    print(f"Đã tạo: {SINGLE_OUTPUT}")
-    print(f"Đã tạo: {INTERACTION_OUTPUT}")
+    print(f"Created figure: {SINGLE_OUTPUT}")
+    print(f"Created figure: {INTERACTION_OUTPUT}")
+    print(f"Created table: {SINGLE_TABLE_OUTPUT}")
+    print(f"Created table: {INTERACTION_TABLE_OUTPUT}")
 
 
 if __name__ == "__main__":

@@ -45,6 +45,11 @@ EXPECTED_FIGURES = [
     "xgboost_fold_macro_f1.png",
 ]
 
+EXPECTED_TABLES = [
+    "success_by_theatrical_release_breadth.csv",
+    "success_by_release_breadth_and_collection.csv",
+]
+
 
 def check_inputs() -> None:
     missing = [path for path in REQUIRED_LOCAL_DATA if not path.exists()]
@@ -52,9 +57,9 @@ def check_inputs() -> None:
     if missing or missing_tables:
         details = [str(path.relative_to(ROOT)) for path in [*missing, *missing_tables]]
         raise FileNotFoundError(
-            "Thiếu đầu vào để tái tạo hình: "
+            "Missing inputs required to recreate figures: "
             + ", ".join(details)
-            + ". Dữ liệu cấp phim không được phân phối trong repository công khai."
+            + ". Row-level data are not distributed in the public repository."
         )
 
 
@@ -62,19 +67,25 @@ def create_model_summary() -> None:
     metrics_frame = pd.read_csv(MODEL_METRICS)
     matrix = pd.read_csv(MODEL_MATRIX, index_col=0).to_numpy(dtype=int)
     if len(metrics_frame) != 1 or matrix.shape != (2, 2):
-        raise ValueError("Artifact XGBoost không đúng schema tổng hợp.")
+        raise ValueError("XGBoost aggregate artifacts do not match the expected schema.")
     if matrix.sum() != int(metrics_frame.iloc[0]["rows"]):
-        raise ValueError("Ma trận nhầm lẫn không khớp số phim benchmark.")
+        raise ValueError("The confusion matrix does not match the benchmark row count.")
     create_summary(metrics_frame.iloc[0], matrix)
 
 
 def validate_outputs() -> None:
     missing = [name for name in EXPECTED_FIGURES if not (FIGURES_DIR / name).exists()]
     if missing:
-        raise RuntimeError("Chưa tạo đủ 9 hình: " + ", ".join(missing))
+        raise RuntimeError("The figure set is incomplete: " + ", ".join(missing))
     empty = [name for name in EXPECTED_FIGURES if (FIGURES_DIR / name).stat().st_size == 0]
     if empty:
-        raise RuntimeError("Hình có kích thước bằng 0: " + ", ".join(empty))
+        raise RuntimeError("The following figures are empty: " + ", ".join(empty))
+    missing_tables = [
+        name for name in EXPECTED_TABLES
+        if not (ROOT / "reports" / "tables" / name).exists()
+    ]
+    if missing_tables:
+        raise RuntimeError("Missing public aggregate tables: " + ", ".join(missing_tables))
 
 
 def main() -> None:
@@ -83,18 +94,18 @@ def main() -> None:
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     check_inputs()
 
-    # 3 hình EDA: overview, tương quan và genre/collection.
+    # Three EDA figures: overview, correlations, and genre/collection.
     run_eda()
-    # 1 hình inventory metadata TMDb đầu vào.
+    # One inventory figure for the original TMDb metadata.
     create_raw_feature_map()
-    # 2 hình phân tích độ rộng phát hành rạp.
+    # Two figures for theatrical-release breadth.
     create_theatrical_figures()
-    # 1 hình tóm tắt benchmark + 2 hình đánh giá outer-OOF.
+    # One benchmark summary and two outer-OOF evaluation figures.
     create_model_summary()
     create_xgboost_figures(include_feature_importance=False)
 
     validate_outputs()
-    print(f"Đã tái tạo {len(EXPECTED_FIGURES)} hình trong {FIGURES_DIR}.")
+    print(f"Recreated {len(EXPECTED_FIGURES)} figures in {FIGURES_DIR}.")
     for name in EXPECTED_FIGURES:
         print(f"- {name}")
 

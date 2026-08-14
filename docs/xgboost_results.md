@@ -1,49 +1,45 @@
-# Kết quả XGBoost trong phạm vi trước phát hành
+# XGBoost Results Within the Pre-Release Scope
 
-## Kết quả tham chiếu ngoài mẫu
+## Reference out-of-sample result
 
-Mốc tham chiếu được đánh giá bằng kiểm định chéo phân tầng lồng nhau, gồm 5 vòng
-ngoài và 4 vòng trong trên 1.646 phim. Kết quả ngoài mẫu gộp như sau:
+The reference configuration was evaluated with five outer and four inner
+stratified folds on 1,646 movies. Pooled outer-OOF results are:
 
-| Chỉ số | Giá trị |
+| Metric | Value |
 | --- | ---: |
-| Macro-F1 | **0,719483** |
-| F1 lớp 0 | 0,605128 |
-| F1 lớp 1 | 0,833837 |
-| Recall lớp 0 | 0,618449 |
-| Recall lớp 1 | 0,826347 |
-| Balanced accuracy | 0,722398 |
-| Accuracy | 0,766100 |
+| Macro-F1 | **0.719483** |
+| F1, class 0 | 0.605128 |
+| F1, class 1 | 0.833837 |
+| Recall, class 0 | 0.618449 |
+| Recall, class 1 | 0.826347 |
+| Balanced accuracy | 0.722398 |
+| Accuracy | 0.766100 |
 
-Các vòng ngoài không tham gia lựa chọn đặc trưng, tiền xử lý, số vòng boosting
-hoặc ngưỡng phân loại. Dự đoán cấp từng phim được lưu cục bộ; repository chỉ
-công khai các bảng tổng hợp.
+Outer folds were not used to select features, preprocessing, boosting rounds,
+or the classification threshold. Per-movie predictions remain local; the
+repository publishes aggregate tables only.
 
-## Kết quả phục vụ báo cáo
+## Public report artifacts
 
-- `xgboost_fold_metrics.csv`: độ ổn định giữa năm vòng kiểm định ngoài.
-- `xgboost_confusion_matrix.csv`: ma trận nhầm lẫn tổng hợp.
-- `xgboost_pooled_metrics.csv`: các chỉ số ngoài mẫu gộp.
-- `xgboost_feature_importance.csv`: mức độ quan trọng của đặc trưng trong mô
-  hình cuối; kết quả này không thay thế phân tích permutation hoặc SHAP ngoài
-  mẫu.
-- Ba hình tương ứng trong `reports/figures/`: ma trận nhầm lẫn, Macro-F1 theo
-  vòng kiểm định và các đặc trưng có mức độ quan trọng cao nhất.
+- `xgboost_fold_metrics.csv`: performance across the five outer folds;
+- `xgboost_confusion_matrix.csv`: pooled confusion matrix;
+- `xgboost_pooled_metrics.csv`: pooled out-of-sample metrics;
+- `xgboost_feature_importance.csv`: feature importance from the final fitted model.
 
-## Mô hình đóng gói
+The corresponding PNG figures are stored in `reports/figures/`. The generator
+is `src/report_xgboost_results.py`, called as part of the public figure workflow.
 
-Mô hình trong `models/` được khớp trên toàn bộ 1.646 phim sau khi khóa cấu hình,
-với 144 vòng boosting và ngưỡng phân loại 0,51. Do mô hình này đã quan sát toàn
-bộ tập dữ liệu, kết quả khớp của nó không được sử dụng để báo cáo khả năng tổng
-quát hóa; căn cứ chính thức vẫn là kết quả ngoài mẫu gộp nêu trên.
+## Packaged model
 
-## Diễn giải và giới hạn
+The model in `models/` is fit on all 1,646 movies after the reference
+configuration was locked. It contains 144 boosting rounds and a classification
+threshold of 0.51. Because this fit has seen the full cohort, its predictions
+are not an independent generalization estimate; the pooled outer-OOF result is
+the official benchmark.
 
-- Mô hình nhận diện lớp thành công tốt hơn lớp không thành công; F1 lớp 0 còn là
-  giới hạn chính.
-- Franchise history cải thiện Macro-F1 so với A+B cố định từ 0,710977 lên
-  0,719483, nhưng chênh lệch nhỏ và cần được diễn giải thận trọng.
-- Kết quả chịu ảnh hưởng bởi chiến lược lấy tối đa 100 phim phổ biến mỗi năm,
-  dữ liệu tài chính thiếu và tính chất ảnh chụp của TMDb.
-- Macro-F1 0,719483 cho thấy metadata trước phát hành chứa tín hiệu dự báo có
-  ích, nhưng chưa đủ cho quyết định tài chính có rủi ro cao nếu dùng độc lập.
+## Interpretation and limitations
+
+- The model identifies the successful class more accurately than the unsuccessful class; class-specific metrics should be read alongside Macro-F1.
+- Franchise history improved Macro-F1 from 0.710977 to 0.719483 relative to the fixed A+B control, but the difference is modest and is not causal evidence.
+- Results are affected by the maximum-100-popular-movies-per-year sampling strategy, missing financial metadata, and the snapshot nature of TMDb.
+- Macro-F1 0.719483 indicates useful predictive signal in the defined metadata scope but does not support high-stakes financial decisions on its own.

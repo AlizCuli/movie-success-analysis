@@ -1,30 +1,30 @@
-# Gói XGBoost chính thức
+# Official XGBoost Model Package
 
-| File | Vai trò |
+| File | Role |
 | --- | --- |
-| `xgboost_pre_release_operational_bundle.joblib` | Bộ kiến tạo đặc trưng, tiền xử lý, XGBoost và ngưỡng phân loại |
-| `xgboost_pre_release_operational_model.json` | Booster native của XGBoost |
-| `xgboost_pre_release_operational_manifest.json` | Cấu hình, phiên bản, checksum và chỉ số tham chiếu |
+| `xgboost_pre_release_operational_bundle.joblib` | Feature builder, preprocessing, XGBoost estimator, and classification threshold |
+| `xgboost_pre_release_operational_model.json` | Native XGBoost booster |
+| `xgboost_pre_release_operational_manifest.json` | Configuration, versions, checksums, and reference metrics |
 
-Kết quả ngoài mẫu tham chiếu của gói là Macro-F1 **0,719483** trên 1.646 phim,
-được ước lượng bằng kiểm định chéo phân tầng lồng nhau 5×4. Gói mô hình được
-khớp trên toàn bộ dữ liệu sau khi khóa cấu hình; do đó, bản thân file đóng gói
-không có một chỉ số kiểm thử độc lập riêng.
+The package corresponds to the reference benchmark: Macro-F1 **0.719483** on
+1,646 movies under 5×4 nested stratified cross-validation. It was fit on the
+full cohort after configuration selection, so the package fit is not an
+independent test estimate.
 
-Huấn luyện lại sau khi đã tái tạo dữ liệu cục bộ:
+After recreating local data, train the final package with:
 
 ```powershell
 & '.\.venv\Scripts\python.exe' src\train_final_xgboost.py
 ```
 
-Xem lược đồ và thực hiện dự đoán:
+Inspect the input schema and run inference with:
 
 ```powershell
 & '.\.venv\Scripts\python.exe' src\predict_xgboost.py --show-schema
 & '.\.venv\Scripts\python.exe' src\predict_xgboost.py input.csv output.csv
 ```
 
-Lược đồ đầu vào và giới hạn của đặc trưng lịch sử được mô tả tại
-[`docs/model_input_schema.md`](../docs/model_input_schema.md). Không nạp file
-`joblib` từ nguồn không tin cậy vì định dạng này có thể thực thi mã khi được
-nạp.
+Input requirements and franchise-history limitations are documented in
+[`docs/model_input_schema.md`](../docs/model_input_schema.md). Do not load a
+`joblib` file from an untrusted source because the format can execute code when
+deserialized.

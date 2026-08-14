@@ -1,44 +1,34 @@
-# Phát hiện EDA TMDb-only
+# TMDb Exploratory Data Analysis Findings
 
-## Chất lượng và phạm vi mẫu
+## Data quality and sample coverage
 
-- Bộ dữ liệu làm sạch gồm 2.597 phim; tập dữ liệu mô hình hóa có 1.646 phim với
-  `budget`, `revenue`, `runtime`, `release_date` và biến mục tiêu hợp lệ.
-- Budget thiếu 855 phim (32,92%), revenue thiếu 839 phim (32,31%) và runtime
-  thiếu 72 phim (2,77%) trong tập làm sạch.
-- Tập dữ liệu mô hình hóa gồm 477 phim không thành công (28,98%) và 1.169 phim
-  thành công (71,02%), cho thấy mất cân bằng lớp ở mức vừa phải.
+- The cleaned dataset contains 2,597 movies; the modeling cohort contains 1,646 movies with valid budget, revenue, runtime, release date, and target values.
+- Budget is missing for 855 movies (32.92%), revenue for 839 (32.31%), and runtime for 72 (2.77%). See [`core_missingness.csv`](../reports/tables/core_missingness.csv).
+- The modeling cohort contains 477 unsuccessful movies (28.98%) and 1,169 successful movies (71.02%).
 
-## Mối liên hệ mô tả
+## Descriptive relationships
 
-- `budget` và `revenue` đều có phân phối lệch phải; trung vị thấp hơn trung
-  bình. Vì vậy, phép biến đổi `log1p` được sử dụng khi mô tả quy mô tài chính và
-  biểu diễn `budget` trong mô hình.
-- Trong các đặc trưng trước phát hành, từng biến riêng lẻ chỉ có tương quan
-  Spearman yếu đến vừa với biến mục tiêu. Kết quả này cho thấy sự cần thiết của
-  việc kết hợp nhiều nhóm siêu dữ liệu thay vì dựa vào một chỉ báo đơn lẻ.
-- Tỷ lệ thành công thay đổi theo `primary_genre` và trạng thái collection, nhưng
-  số phim giữa các nhóm không đồng đều. Biểu đồ nhóm luôn kèm `n` để tránh diễn
-  giải quá mức ở nhóm nhỏ.
-- Tỷ lệ thành công theo năm biến động trong mẫu. Mỗi năm chỉ có tối đa 100 phim
-  phổ biến nên xu hướng không đại diện cho toàn bộ thị trường điện ảnh.
+- `budget` and `revenue` are right-skewed, with medians below their means. `log1p` transformations are used for descriptive scale comparisons and for the budget representation used by the model.
+- Individual pre-release variables have weak-to-moderate Spearman associations with the target. The full matrix is available in [`pre_release_spearman.csv`](../reports/tables/pre_release_spearman.csv).
+- The largest basic associations with `is_successful` are `is_collection` (ρ = 0.283), `theatrical_country_count` (ρ = 0.245), and `release_event_count` (ρ = 0.192).
+- Observed success rates differ across primary genres and collection status. Group sizes are shown in the figure and in [`success_by_primary_genre_collection.csv`](../reports/tables/success_by_primary_genre_collection.csv).
+- Observed success rates range from 28.6% in the 0–5-market theatrical-release group to 77.7% in the more-than-30-market group. The public aggregate evidence is [`success_by_theatrical_release_breadth.csv`](../reports/tables/success_by_theatrical_release_breadth.csv).
+- Yearly rates vary within the sample; the collection strategy is limited to at most 100 popular movies per year and is not representative of the full market.
 
-Ba hình EDA chính được tạo bởi `src/eda_movies.py`:
+## Reproducible outputs
 
-- `reports/figures/dataset_overview.png`;
-- `reports/figures/pre_release_spearman_heatmap.png`;
-- `reports/figures/success_by_genre_collection.png`.
+The EDA generator is `src/eda_movies.py`. The complete nine-figure set is
+recreated by `src/generate_report_figures.py`.
 
-Các bảng tương ứng nằm trong `reports/tables/dataset_summary.csv`,
-`core_missingness.csv`, `pre_release_spearman.csv`,
-`success_by_primary_genre_collection.csv` và `yearly_success_summary.csv`.
+- `reports/figures/dataset_overview.png`
+- `reports/figures/pre_release_spearman_heatmap.png`
+- `reports/figures/success_by_genre_collection.png`
 
-## Giới hạn diễn giải
+Corresponding aggregate tables are stored in `reports/tables/`.
 
-- Các hệ số tương quan và tỷ lệ nhóm chỉ mô tả mối liên hệ, không chứng minh
-  quan hệ nhân quả.
-- Giá trị tiền là danh nghĩa, chưa điều chỉnh lạm phát.
-- Ảnh chụp TMDb hiện tại không chứng minh tuyệt đối thời điểm công bố của từng
-  trường siêu dữ liệu.
-- `revenue` chỉ được sử dụng để tạo biến mục tiêu và mô tả kết quả, không được
-  sử dụng làm đặc trưng dự báo.
+## Interpretation limits
+
+- Correlations and group rates describe associations in the sampled snapshot and do not establish causality.
+- Monetary values are nominal and are not inflation-adjusted.
+- The current TMDb snapshot does not prove the historical publication date of every metadata field.
+- `revenue` is used to construct the target and describe the realized outcome; it is not a predictive feature.

@@ -102,11 +102,11 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8")
     metrics_frame = pd.read_csv(METRICS_PATH)
     if len(metrics_frame) != 1:
-        raise ValueError("Bảng benchmark phải chứa đúng một dòng.")
+        raise ValueError("The benchmark table must contain exactly one row.")
     metrics = metrics_frame.iloc[0]
     matrix = pd.read_csv(MATRIX_PATH, index_col=0).to_numpy(dtype=int)
     if matrix.shape != (2, 2) or matrix.sum() != int(metrics["rows"]):
-        raise ValueError("Ma trận nhầm lẫn không khớp số phim benchmark.")
+        raise ValueError("The confusion matrix does not match the benchmark row count.")
     create_summary(metrics, matrix)
     create_confusion_matrix(matrix)
     print(f"summary={SUMMARY_OUTPUT}")

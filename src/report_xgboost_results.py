@@ -1,4 +1,4 @@
-"""Tạo bảng và biểu đồ báo cáo cho benchmark XGBoost outer-OOF."""
+"""Create report tables and figures for the XGBoost outer-OOF benchmark."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ def save_figure(figure: plt.Figure, name: str) -> None:
 
 
 def arrays_from_confusion_matrix(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Khôi phục nhãn tổng hợp để tính metric mà không cần dữ liệu từng phim."""
+    """Reconstruct aggregate labels for metrics without row-level data."""
     true_negative, false_positive, false_negative, true_positive = matrix.ravel()
     actual = np.concatenate(
         [
@@ -70,13 +70,13 @@ def load_aggregate_artifacts() -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
     if missing:
         names = ", ".join(str(path) for path in missing)
         raise FileNotFoundError(
-            "Thiếu artifact tổng hợp. Hãy chạy stage evaluate trước: " + names
+            "Missing aggregate artifacts. Run the evaluate stage first: " + names
         )
     fold_metrics = pd.read_csv(FOLD_METRICS)
     matrix = pd.read_csv(CONFUSION_MATRIX, index_col=0).to_numpy(dtype=int)
     importance = pd.read_csv(FEATURE_IMPORTANCE)
     if fold_metrics["outer_fold"].nunique() != 5 or matrix.shape != (2, 2):
-        raise ValueError("Artifact benchmark tổng hợp không đúng schema 5-fold/2 lớp.")
+        raise ValueError("Aggregate benchmark artifacts do not match the 5-fold/2-class schema.")
     return fold_metrics, matrix, importance
 
 
@@ -88,9 +88,9 @@ def main(include_feature_importance: bool = True) -> None:
     if PREDICTIONS.exists():
         predictions = pd.read_csv(PREDICTIONS)
         if predictions.empty or predictions["tmdb_id"].duplicated().any():
-            raise ValueError("OOF predictions phải có tmdb_id duy nhất và không được trống.")
+            raise ValueError("OOF predictions must be non-empty and have unique tmdb_id values.")
         if not np.isfinite(predictions["probability_success"]).all():
-            raise ValueError("OOF probability chứa NaN/Inf.")
+            raise ValueError("OOF probabilities contain NaN or Inf.")
 
         fold_rows = []
         for fold, group in predictions.groupby("outer_fold", sort=True):
@@ -184,8 +184,8 @@ def main(include_feature_importance: bool = True) -> None:
     )
     print("XGBoost report artifacts: PASS")
     print(f"Macro-F1: {pooled['macro_f1']:.6f}")
-    source = "OOF local" if PREDICTIONS.exists() else "artifact tổng hợp công khai"
-    print(f"Nguồn tái tạo báo cáo: {source}")
+    source = "local OOF predictions" if PREDICTIONS.exists() else "public aggregate artifacts"
+    print(f"Report source: {source}")
     print(f"Created 4 aggregate tables and 3 figures in {ROOT / 'reports'}")
 
 

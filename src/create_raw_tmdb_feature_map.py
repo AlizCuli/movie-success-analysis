@@ -39,7 +39,7 @@ def main() -> None:
         sys.stdout.reconfigure(encoding="utf-8")
     source_count = sum(len(fields) for _, fields in FEATURE_GROUPS)
     if source_count != 15:
-        raise ValueError(f"Feature map phải có 15 trường, hiện có {source_count}.")
+        raise ValueError(f"The feature map must contain 15 fields; found {source_count}.")
 
     navy = "#173F5F"
     teal = "#2A7F8E"

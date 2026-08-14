@@ -1,37 +1,38 @@
-# Lịch sử franchise theo thời điểm
+# Time-Aware Franchise History
 
-## Giả thuyết
+## Hypothesis
 
-Các phần phim đã phát hành trước trong cùng collection có thể cung cấp tín hiệu
-về mức độ quen thuộc của thương hiệu và lịch sử quy mô dự án. Thí nghiệm chỉ bổ
-sung đặc trưng lịch sử vào tập đặc trưng A+B, không thay đổi mẫu, biến mục tiêu
-hoặc phân hoạch vòng ngoài.
+Earlier releases in the same collection may provide information about brand
+familiarity and the historical scale of a project. The experiment added
+history features to the A+B feature set without changing the sample, target, or
+outer-fold partitions.
 
-## Bốn đặc trưng lịch sử
+## Four history features
 
 - `collection_prior_movie_count`;
-- `collection_prior_success_rate` có làm trơn;
+- smoothed `collection_prior_success_rate`;
 - `collection_prior_mean_log_budget`;
 - `collection_years_since_previous`.
 
-Bộ kiến tạo lịch sử được khớp riêng trong từng phân hoạch huấn luyện. Chỉ phim
-có ngày phát hành sớm hơn phim cần dự đoán được sử dụng; phân hoạch xác thực và
-kiểm thử không cập nhật kho lịch sử. `revenue` của phim mục tiêu không được sử
-dụng làm đặc trưng dự báo.
+The history builder is fit separately within each training partition. Only
+movies released before the query movie are eligible; validation and test rows
+do not update the history state. The target movie's `revenue` is not used as a
+predictor.
 
-## Kết quả ngoài mẫu gộp
+## Pooled outer-OOF result
 
-| Cấu hình | Macro-F1 | F1 lớp 0 | Recall lớp 0 | Balanced accuracy |
+| Configuration | Macro-F1 | F1, class 0 | Recall, class 0 | Balanced accuracy |
 | --- | ---: | ---: | ---: | ---: |
-| A+B cố định | 0,710977 | 0,597194 | **0,624738** | 0,716988 |
-| A+B + franchise history | **0,719483** | **0,605128** | 0,618449 | **0,722398** |
+| A+B fixed | 0.710977 | 0.597194 | **0.624738** | 0.716988 |
+| A+B + franchise history | **0.719483** | **0.605128** | 0.618449 | **0.722398** |
 
-Franchise history tăng Macro-F1 0,008505 và F1 lớp 0 0,007934, trong khi recall
-lớp 0 giảm nhẹ 0,006289. Cải thiện là nhỏ nhưng xuất hiện ở metric chính và
-giải như bằng chứng nhân quả về tác động của franchise.
-balanced accuracy; vì vậy cấu hình này được chọn làm mốc tham chiếu. Chênh lệch
-không được diễn giải như bằng chứng nhân quả về tác động của franchise.
-giải như bằng chứng nhân quả về tác động của franchise.
+Franchise-history features increased Macro-F1 by 0.008505 and class-0 F1 by
+0.007934, while class-0 recall decreased by 0.006289. The improvement is
+modest but occurs in the primary metric and balanced accuracy; therefore, this
+configuration was retained as the reference model. The observed difference
+should not be interpreted as causal evidence of a franchise effect.
 
-Các kết quả công khai là bảng tổng hợp trong `reports/tables/`; dự đoán và phân
-hoạch vòng ngoài cấp từng phim chỉ được lưu cục bộ.
+The public evidence is available in
+[`operational_franchise_comparison.csv`](../reports/tables/operational_franchise_comparison.csv)
+and [`operational_franchise_metrics.csv`](../reports/tables/operational_franchise_metrics.csv).
+Per-movie predictions and outer-fold assignments remain local.

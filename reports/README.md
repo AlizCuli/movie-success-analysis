@@ -28,4 +28,14 @@ The generator validates its required aggregate artifacts, then recreates the nin
 - `xgboost_confusion_matrix.png`: pooled outer-OOF confusion matrix.
 - `xgboost_fold_macro_f1.png`: Macro-F1 across outer validation folds.
 
-The tables under `reports/tables/` are public aggregates that support these figures and the official benchmark. They are not substitutes for the intentionally excluded row-level data.
+## Public aggregate evidence
+
+The theatrical-release figures are supported by two row-free tables generated
+by `src/create_theatrical_release_figures.py`:
+
+- [`success_by_theatrical_release_breadth.csv`](tables/success_by_theatrical_release_breadth.csv)
+- [`success_by_release_breadth_and_collection.csv`](tables/success_by_release_breadth_and_collection.csv)
+
+The tables under `reports/tables/` are public aggregates that support these
+figures and the official benchmark. They are not substitutes for the
+intentionally excluded row-level data.

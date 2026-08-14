@@ -1,43 +1,40 @@
-# Nguồn và phạm vi dữ liệu
+# Data Sources and Collection Scope
 
-## Nguồn duy nhất
+## Primary source
 
-Báo cáo và mô hình cuối chỉ sử dụng **TMDb Official API**. Ảnh chụp dữ liệu
-chính được thu thập ngày 17-07-2026 (UTC), gồm tối đa 100 phim phổ biến cho mỗi
-năm trong giai đoạn 2000–2025.
+The final analysis uses the **TMDb Official API** as its sole data source. The
+research snapshot was collected on 2026-07-17 (UTC), with up to 100 popular
+movies per year from 2000 through 2025.
 
-Các endpoint chính:
+Primary endpoints:
 
-- `/discover/movie`: xác định danh sách phim theo từng năm;
-- `/movie/{movie_id}`: budget, revenue, runtime, genre, quốc gia và công ty;
-- `/movie/{movie_id}/credits`, `/release_dates`, `/keywords`: siêu dữ liệu bổ
-  sung trong phạm vi trước phát hành theo quy ước vận hành.
+- `/discover/movie`: selects movies by year and popularity order;
+- `/movie/{movie_id}`: retrieves budget, revenue, runtime, genres, countries, and companies;
+- `/movie/{movie_id}/credits`, `/release_dates`, and `/keywords`: supplies additional metadata within the defined operational scope.
 
-Các trường popularity, vote và rating có thể được giữ nguyên trong phản hồi thô
-để bảo toàn dữ liệu nguồn, nhưng không được dùng trong EDA chính hoặc predictor
-vì không bảo đảm có sẵn trước phát hành. `revenue` chỉ được sử dụng để xác lập
-biến mục tiêu.
+Popularity, ratings, vote counts, and other post-release signals may remain in
+raw API responses for source fidelity, but they are excluded from the main EDA
+and from model predictors. `revenue` is used only to construct the target.
 
-Nguồn: [The Movie Database (TMDb)](https://www.themoviedb.org/).
+Source: [The Movie Database (TMDb)](https://www.themoviedb.org/).
 
 > This product uses the TMDB API but is not endorsed or certified by TMDB.
 
-## Chiến lược lấy mẫu
+## Sampling and validation
 
-- Giai đoạn: 2000-01-01 đến 2025-12-31.
-- Tối đa 5 trang mỗi năm, tương đương tối đa 100 phim mỗi năm.
-- Sắp xếp theo `popularity.desc` chỉ phục vụ chọn mẫu khi thu thập;
-  `popularity` không phải đặc trưng dự báo.
-- Chỉ giữ phim không dành cho người lớn, không phải video và có ngày phát hành
-  thực tế trong phạm vi.
-- Loại trùng bằng `tmdb_id`.
+- Date range: 2000-01-01 through 2025-12-31.
+- Maximum five discovery pages per year, equivalent to 100 movies per year.
+- `sort_by=popularity.desc` is used for sample selection, not as a predictor.
+- Adult and video titles are excluded.
+- Movies are retained only when the actual release date falls within the target period.
+- Duplicate records are removed by `tmdb_id`.
 
-## Chính sách phân phối
+## Distribution policy
 
-File gốc, trung gian, đã xử lý, điểm kiểm tra và dự đoán cấp từng phim chỉ được
-lưu cục bộ và bị `.gitignore` loại khỏi Git. Repository công khai chỉ cung cấp
-mã nguồn, cấu trúc thư mục, mô hình đóng gói và kết quả tổng hợp. Việc tái tạo
-ảnh chụp dữ liệu yêu cầu TMDb API Read Access Token hợp lệ.
+Raw, interim, processed, checkpoint, and per-movie prediction files remain local
+and are excluded by `.gitignore`. The public repository provides source code,
+directory structure, the packaged model, aggregate tables, and figures. Data
+reproduction requires a valid TMDb API Read Access Token.
 
-Do TMDb được cập nhật liên tục, số liệu tái chạy vào thời điểm khác có thể thay
-đổi nhẹ so với ảnh chụp dữ liệu dùng để thiết lập mốc tham chiếu.
+TMDb is updated continuously, so reruns at a later date may produce a different
+snapshot and slightly different aggregate results.

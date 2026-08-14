@@ -1,86 +1,82 @@
-# Sổ đăng ký thí nghiệm tối ưu
+# Experiment Registry
 
-Tài liệu này ghi nhận các thí nghiệm đã được đánh giá nhằm tránh lặp lại những
-hướng không hiệu quả. Mốc tham chiếu hiện hành là XGBoost A+B kết hợp lịch sử
-franchise trong phạm vi trước phát hành theo quy ước vận hành, đạt Macro-F1
-ngoài mẫu gộp **0,719483** trên 1.646 phim.
+This registry records evaluated directions so that rejected approaches are not
+repeated. The current reference is XGBoost A+B with time-aware franchise
+history within the defined pre-release operational scope: pooled outer-OOF
+Macro-F1 **0.719483** on 1,646 movies.
 
-## Giao thức bắt buộc
+## Required protocol
 
-- Biến mục tiêu: `revenue >= 2 × budget`.
-- `StratifiedKFold` gồm 5 vòng ngoài với seed 42 và 4 vòng trong với seed 43.
-- Macro-F1 là chỉ số chính.
-- Mọi bước tiền xử lý, trạng thái đặc trưng, tối ưu tham số và lựa chọn ngưỡng
-  phải diễn ra trong dữ liệu huấn luyện hoặc vòng kiểm định trong.
-- Kết quả vòng ngoài không được sử dụng để lựa chọn cấu hình.
-- Cấm revenue, popularity, rating, vote, profit, ROI và biến hậu phát hành.
+- Target: `revenue >= 2 × budget`.
+- `StratifiedKFold`: five outer folds with seed 42 and four inner folds with seed 43.
+- Primary metric: Macro-F1.
+- Preprocessing, feature state, tuning, and threshold selection are fit within training or inner-validation data.
+- Outer-fold results are not used to select a configuration.
+- `revenue`, popularity, ratings, votes, profit, ROI, and post-release variables are prohibited predictors.
 
-## Các mốc đã đạt
+## Reference chronology
 
-| Mốc | Phạm vi | Macro-F1 | Kết luận |
+| Milestone | Scope | Macro-F1 | Conclusion |
 | --- | --- | ---: | --- |
-| Extended XGBoost cũ | Có tín hiệu hậu phát hành | 0,7597 | Không hợp lệ cho đề tài cuối |
-| XGBoost gần với phạm vi trước phát hành | Phạm vi cũ chưa được kiểm định đầy đủ | 0,7144 | Mốc lịch sử, không phải mốc tham chiếu hiện hành |
-| A+B vận hành cố định | Trước phát hành theo quy ước vận hành | 0,710977 | Cấu hình đối chứng chính thức |
-| Bối cảnh ngân sách vận hành V2 | Trước phát hành theo quy ước vận hành | 0,7087 | Không vượt cấu hình đối chứng |
-| A+B kết hợp lịch sử franchise | Trước phát hành theo quy ước vận hành | **0,719483** | Mốc tham chiếu chính thức |
+| Earlier extended XGBoost | Included post-release signals | 0.7597 | Not valid for the final research question |
+| Earlier pre-release XGBoost | Earlier scope, not fully verified | 0.7144 | Historical milestone, not the current reference |
+| A+B fixed | Operational pre-release scope | 0.710977 | Official control configuration |
+| Operational Budget Context V2 | Operational pre-release scope | 0.7087 | Did not exceed the control |
+| A+B with franchise history | Operational pre-release scope | **0.719483** | Current reference |
 
-## Hướng đã thử và bị loại
+## Rejected directions
 
-### Tín hiệu hậu phát hành
+### Post-release signals
 
-Popularity, rating và vote từng giúp điểm cao hơn, nhưng không có sẵn tin cậy
-trước phát hành. Các trường này không được đưa trở lại dù có thể làm tăng chỉ
-số đánh giá.
+Popularity, ratings, and vote counts improved some historical scores but are not
+reliably available before release. They remain excluded from the final model.
 
-### Hyperparameter và threshold
+### Hyperparameters and threshold
 
-Grid search và Optuna đã được sử dụng để khảo sát learning rate, độ sâu, child
-weight, subsampling, regularization, trọng số lớp, số cây và ngưỡng phân loại.
-Không gian tìm kiếm rộng không tạo cải thiện ổn định so với cấu hình A+B đã
-khóa. Không lặp lại không gian tìm kiếm cũ nếu không có đặc trưng hoặc dữ liệu
-mới.
+Grid search and Optuna evaluated learning rate, depth, child weight,
+subsampling, regularization, class weighting, boosting rounds, and the
+classification threshold. Broader search did not produce a stable improvement
+over the locked A+B configuration. The same search space should not be repeated
+without new features or data.
 
-### Biểu diễn nội dung và metadata
+### Content and metadata representations
 
-Đã thử TF-IDF/SVD overview, keyword identity, interaction budget/genre, cách mã
-hóa biến phân loại và các nhóm siêu dữ liệu mở rộng. Kết quả vòng kiểm định
-trong không cải thiện ổn
-định hoặc tăng độ phức tạp nhiều hơn giá trị thu được.
+TF-IDF/SVD overview features, keyword identity, budget/genre interactions,
+alternative categorical encodings, and expanded metadata groups did not improve
+inner-validation performance consistently enough to justify their complexity.
 
 ### Operational Budget Context V1
 
-Các biến bối cảnh ngân sách chỉ tăng Macro-F1 vòng trong trung bình khoảng
-**+0,001261**,
-thấp hơn tiêu chí +0,003 nên bị loại. Bảy đặc trưng của nhóm này không thuộc
-mốc tham chiếu và không nên được đưa lại nguyên trạng.
+The seven budget-context features improved mean inner Macro-F1 by approximately
+**0.001261**, below the +0.003 screening criterion. They are not part of the
+reference configuration.
 
-### Entity history V1
+### Entity History V1
 
-Đặc trưng lịch sử theo thời điểm từ ảnh chụp dữ liệu hiện có không vượt tiêu chí
-sàng lọc vòng trong:
+Time-aware history from the available snapshot did not pass the inner-validation
+screening gate:
 
-| Nhóm đặc trưng | Chênh lệch Macro-F1 vòng trong so với đối chứng |
+| Entity group | Inner Macro-F1 difference vs. control |
 | --- | ---: |
-| Top-billed cast | -0,001900 |
-| Director | -0,002840 |
-| Production company | -0,002957 |
+| Top-billed cast | -0.001900 |
+| Director | -0.002840 |
+| Production company | -0.002957 |
 
-Nhánh nhà phân phối bị chặn vì không có nguồn gốc dữ liệu và khóa định danh đủ
-tin cậy; `production_companies` không được xem là nhà phân phối. Hướng này chỉ
-nên được đánh giá lại khi có kho lịch sử rộng hơn, độ bao phủ tốt hơn và giả
-thuyết mới rõ ràng.
+The distributor branch was blocked because no source with reliable provenance
+and identifiers was available. TMDb `production_companies` is not treated as a
+distributor. Reassessment requires broader historical coverage and a clearer
+hypothesis.
 
-### Mô hình ngoài phạm vi
+### Out-of-scope models
 
-k-NN, Logistic Regression, Random Forest và CatBoost từng được khảo sát nhưng
-đã bị loại khi đề tài chốt chỉ sử dụng XGBoost. Không tái triển khai trong quy trình
-cuối.
+k-NN, Logistic Regression, Random Forest, and CatBoost were surveyed but removed
+when the project scope was fixed to XGBoost. They are not part of the final
+workflow.
 
-## Điều kiện mở thí nghiệm mới
+## Conditions for new experiments
 
-Một thí nghiệm mới phải ghi rõ giả thuyết khác biệt, dữ liệu hoặc đặc trưng mới,
-giao thức chống rò rỉ, tiêu chí sàng lọc vòng trong, chi phí tính toán và kết
-quả riêng. Không ghi đè mô hình hoặc bảng tham chiếu hiện hành. Đánh giá vòng
-ngoài chỉ được thực hiện một lần sau khi tập đặc trưng đã được khóa hoàn toàn
-bằng kiểm định vòng trong.
+A new experiment must state a distinct hypothesis, new data or features, leakage
+controls, inner-validation screening criterion, computational cost, and separate
+results. It must not overwrite the reference model or aggregate tables. Outer
+evaluation is performed once only after the feature set is locked through inner
+validation.

@@ -1,7 +1,7 @@
-"""Tạo các bảng và hình EDA TMDb phục vụ báo cáo cuối.
+"""Create TMDb-only EDA tables and figures for the final report.
 
-EDA chỉ mô tả dữ liệu và nhãn. Các predictor hậu phát hành như popularity,
-rating và vote không xuất hiện trong bảng/hình chính của báo cáo.
+EDA describes the data and target. Post-release signals such as popularity,
+ratings, and vote counts do not appear in the main report outputs.
 """
 
 from __future__ import annotations
@@ -66,7 +66,7 @@ def load_datasets() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Series
     for path in (CLEANED_PATH, MODELING_PATH):
         if not path.exists():
             raise FileNotFoundError(
-                f"Không tìm thấy {path}. Hãy chạy src/preprocess_movies.py trước."
+                f"Missing {path}. Run src/preprocess_movies.py first."
             )
 
     cleaned = pd.read_csv(CLEANED_PATH, parse_dates=["release_date"])
@@ -74,13 +74,13 @@ def load_datasets() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Series
     raw_features, target = load_pre_release_modeling_data()
 
     if cleaned.empty or modeling.empty:
-        raise ValueError("Dữ liệu cleaned/modeling đang trống.")
+        raise ValueError("Cleaned or modeling data is empty.")
     if cleaned["tmdb_id"].duplicated().any() or modeling["tmdb_id"].duplicated().any():
-        raise ValueError("Phát hiện tmdb_id trùng trong dữ liệu EDA.")
+        raise ValueError("Duplicate tmdb_id values detected in EDA data.")
     if not raw_features["tmdb_id"].reset_index(drop=True).equals(
         modeling["tmdb_id"].reset_index(drop=True)
     ):
-        raise ValueError("Thứ tự tmdb_id giữa modeling và enrichment không khớp.")
+        raise ValueError("Modeling and enrichment tmdb_id order does not match.")
 
     return cleaned, modeling, raw_features, target
 
@@ -339,7 +339,7 @@ def plot_feature_associations(
 
 
 def plot_spearman_heatmap(correlation: pd.DataFrame) -> Path:
-    """Tạo heatmap độc lập để đặt theo chiều rộng hai cột của báo cáo."""
+    """Create the standalone heatmap used in the report layout."""
     figure, axis = plt.subplots(figsize=(7.0, 4.3), facecolor="white")
     norm = TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
     image = axis.imshow(
@@ -390,7 +390,7 @@ def plot_spearman_heatmap(correlation: pd.DataFrame) -> Path:
 
 
 def plot_genre_collection_rates(genre_collection: pd.DataFrame) -> Path:
-    """Tạo biểu đồ thể loại–franchise độc lập cho một cột báo cáo."""
+    """Create the standalone genre and collection comparison figure."""
     figure, axis = plt.subplots(figsize=(4.2, 4.0), facecolor="white")
     overall = (
         genre_collection.groupby("primary_genre", observed=True)
@@ -496,9 +496,9 @@ def run_eda() -> dict[str, object]:
         save_table(genre_collection, "success_by_primary_genre_collection.csv"),
         save_table(yearly, "yearly_success_summary.csv"),
     ]
-    # Bộ EDA chính gồm ba hình độc lập được lưu trong reports/figures.
-    # Hình ghép cũ vẫn được giữ dưới dạng hàm để tương thích, nhưng không còn
-    # được gọi trong pipeline chính vì báo cáo sử dụng hai hình độc lập.
+    # The main EDA set contains three standalone figures in reports/figures.
+    # The legacy composite helper remains for compatibility but is not called
+    # by the main pipeline because the report uses separate figures.
     figures = [
         plot_dataset_overview(modeling, missingness),
         plot_spearman_heatmap(correlation),
@@ -507,7 +507,7 @@ def run_eda() -> dict[str, object]:
 
     print(f"movies_cleaned: {len(cleaned)}")
     print(f"movies_modeling: {len(modeling)}")
-    print(f"Đã tạo {len(tables)} bảng và {len(figures)} hình EDA TMDb-only.")
+    print(f"Created {len(tables)} tables and {len(figures)} TMDb-only EDA figures.")
     return {
         "cleaned": cleaned,
         "modeling": modeling,

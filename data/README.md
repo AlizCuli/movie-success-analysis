@@ -1,16 +1,16 @@
-# Dữ liệu cục bộ
+# Local Data
 
-Repository không phân phối dữ liệu TMDb gốc hoặc dữ liệu dẫn xuất. Việc tái tạo
-dữ liệu yêu cầu một TMDb API Read Access Token hợp lệ.
+The public repository does not distribute raw TMDb responses or row-level
+derived data. Reproduction requires a valid TMDb API Read Access Token.
 
-## Cấu trúc
+## Directory structure
 
-- `raw/`: phản hồi JSON/JSONL từ TMDb và điểm kiểm tra thu thập.
-- `external/`: giữ chỗ cho nguồn phụ trợ; không được dùng trong phạm vi cuối.
-- `interim/`: CSV cấu trúc hóa trực tiếp từ dữ liệu TMDb.
-- `processed/`: dữ liệu làm sạch phục vụ EDA và mô hình hóa.
+- `raw/`: TMDb JSON/JSONL responses, enrichment snapshots, and checkpoints;
+- `external/`: reserved for auxiliary sources outside the final scope;
+- `interim/`: structured tables derived directly from TMDb responses;
+- `processed/`: cleaned tables used for EDA and modeling.
 
-## Các file chính do quy trình tạo ra
+## Main local artifacts
 
 ```text
 data/raw/tmdb_movies_2000_2025.json
@@ -20,6 +20,6 @@ data/processed/movies_cleaned.csv
 data/processed/movies_modeling.csv
 ```
 
-Mọi nội dung trong các thư mục trên, ngoại trừ `.gitkeep`, đều bị `.gitignore`
-loại khỏi Git. Token không được lưu trong `data/` và chỉ được khai báo trong
-file `.env` cục bộ. Tất cả được tuân thủ theo quy định của TMDb: không được công khai project.
+All content in these directories except `.gitkeep` is excluded by `.gitignore`.
+The API token belongs only in the local `.env` file. TMDb data must not be
+redistributed through this repository.

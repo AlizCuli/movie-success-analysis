@@ -1,55 +1,57 @@
-# Trạng thái dự án
+# Project Status
 
-## Phạm vi nghiên cứu cuối cùng
+## Final scope
 
-- Đề tài: dự đoán khả năng thành công tài chính của phim trước phát hành.
-- Nguồn dữ liệu: TMDb Official API.
-- Biến mục tiêu: `revenue >= 2 × budget`.
-- Mô hình: XGBoost trong phạm vi trước phát hành theo quy ước vận hành.
-- Phương pháp đánh giá: kiểm định chéo phân tầng lồng nhau, gồm 5 vòng ngoài và
-  4 vòng trong.
-- Chỉ số chính: Macro-F1.
+- **Topic:** Predicting movie financial success from information available before release.
+- **Source:** TMDb Official API.
+- **Target:** `revenue >= 2 × budget`.
+- **Model:** XGBoost within the defined pre-release operational scope.
+- **Evaluation:** 5 outer × 4 inner nested stratified cross-validation.
+- **Primary metric:** Macro-F1.
 
-## Dữ liệu
+## Dataset
 
-- 2.597 phim TMDb giai đoạn 2000–2025.
-- 1.646 phim đáp ứng điều kiện của tập dữ liệu mô hình hóa.
-- Lớp 0: 477 phim; lớp 1: 1.169 phim.
-- Dữ liệu gốc, trung gian và đã xử lý chỉ được lưu cục bộ và bị Git bỏ qua.
-- Repository công khai không chứa dữ liệu hoặc dự đoán cấp từng phim.
+- 2,597 TMDb movies from 2000–2025.
+- 1,646 observations satisfy the modeling-data requirements.
+- Class 0 (unsuccessful): 477 movies.
+- Class 1 (successful): 1,169 movies.
+- Raw, interim, and processed row-level files remain local and are excluded from Git.
 
-## Mốc tham chiếu được bảo toàn
+## Reference benchmark
 
-| Chỉ số | Giá trị |
+| Metric | Value |
 | --- | ---: |
-| Macro-F1 trên dự đoán ngoài mẫu gộp | **0.719483** |
-| F1 lớp 0 | 0.605128 |
-| Recall lớp 0 | 0.618449 |
+| Pooled outer-OOF Macro-F1 | **0.719483** |
+| F1, class 0 | 0.605128 |
+| Recall, class 0 | 0.618449 |
 | Balanced accuracy | 0.722398 |
 | Accuracy | 0.766100 |
 
-Mô hình cuối đã được đóng gói trong `models/` với 144 cây, ngưỡng phân loại
-0,51, 51 đặc trưng sau bước kiến tạo và 160 đặc trưng sau tiền xử lý.
+The official model bundle contains 144 boosting rounds, a classification
+threshold of 0.51, 51 engineered input features, and 160 transformed features.
+The bundle is fit on the full modeling cohort after the reference configuration
+was locked; its fit is not used as an independent generalization estimate.
 
-## Thành phần hoàn thiện
+## Completed components
 
-- Quy trình thu thập, tiền xử lý, làm giàu dữ liệu, EDA, đánh giá và huấn luyện.
-- Notebook EDA chỉ sử dụng TMDb và không nhúng kết quả đầu ra dung lượng lớn.
-- Ba hình EDA chính và ba hình đánh giá XGBoost.
-- Gói mô hình, mô hình XGBoost nguyên bản và manifest chứa checksum.
-- README trình bày cấu trúc dự án, quy trình và hướng dẫn tái lập.
-- Bộ kiểm tra giao ước không phụ thuộc dữ liệu cục bộ.
+- TMDb collection, validation, preprocessing, enrichment, EDA, evaluation, and training workflows.
+- TMDb-only EDA notebook and reproducible report-figure generator.
+- Official XGBoost bundle, native model, manifest, and checksums.
+- Public aggregate tables and figures without row-level movie data.
+- Repository contract tests that do not require private data.
+- Documentation of feature scope, leakage controls, limitations, and rejected experiments.
 
-## Giới hạn phải nêu trong báo cáo
+## Known limitations
 
-- Việc lấy tối đa 100 phim phổ biến mỗi năm có thể tạo sai lệch chọn mẫu.
-- TMDb hiện tại không phải kho lưu trữ theo thời điểm của mọi trường siêu dữ
-  liệu.
-- Nhãn là tiêu chuẩn phân loại được xác lập trong phạm vi nghiên cứu.
-- Lớp không thành công chiếm 28,98% và có F1 thấp hơn lớp thành công.
+- The collection samples at most 100 popular movies per year and is not random.
+- TMDb is a current snapshot rather than a complete point-in-time archive for every field.
+- Missing financial metadata reduces the modeling cohort.
+- The target threshold is a project-defined classification rule, not an accounting-profit measure.
+- Class 0 has lower predictive performance than class 1.
+- EDA associations are descriptive and do not establish causality.
 
-## Trạng thái hiện tại
+## Current status
 
-Dự án đã chốt cấu hình tham chiếu ở Macro-F1 `0,719483` và chuyển sang giai
-đoạn hoàn thiện báo cáo. Mọi phát triển mô hình mới phải giữ nguyên giao thức
-đánh giá và được ghi nhận trong `docs/tuning_registry.md`.
+The reference configuration is frozen at Macro-F1 `0.719483`. Further modeling
+work must preserve the current target, split protocol, leakage controls, and
+benchmark artifacts and must be documented in [`docs/tuning_registry.md`](docs/tuning_registry.md).

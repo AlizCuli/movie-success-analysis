@@ -30,8 +30,8 @@ Thumbs.db
 *.tmp
 *.log
 
-# Dữ liệu chỉ được giữ local và không phân phối qua repository public.
-# Chỉ giữ README và .gitkeep để mô tả cấu trúc thư mục.
+# Row-level data remains local and is not distributed through the public repository.
+# README files and .gitkeep placeholders remain tracked to document the structure.
 data/raw/*
 !data/raw/.gitkeep
 data/external/*
