@@ -2,7 +2,7 @@
 
 > Can information available before release identify films that meet a project-defined financial-success threshold?
 
-[![Repository checks](https://github.com/AlizCules/Movie-Success-Analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/AlizCules/Movie-Success-Analysis/actions/workflows/ci.yml)
+[![TMDb API](https://img.shields.io/badge/Data-TMDb%20API-01B4E4?logo=themoviedatabase&logoColor=white)](https://www.themoviedb.org/)
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
 An individual Data Analysis project at Ho Chi Minh City Open University. The
