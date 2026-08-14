@@ -2,7 +2,6 @@
 
 > Can information available before a movie's release help identify films that meet a project-defined financial-success threshold?
 
-[![Repository checks](https://github.com/AlizCuli/movie-success-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/AlizCuli/movie-success-analysis/actions/workflows/ci.yml)
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
 An end-to-end, individual data analysis project using the TMDb Official API. It combines data collection, validation, exploratory analysis, leakage-safe feature engineering, and nested cross-validation to evaluate pre-release signals of movie financial success.
