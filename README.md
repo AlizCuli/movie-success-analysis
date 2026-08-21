@@ -14,6 +14,14 @@ classifier without using post-release predictors.
 | --- | --- | --- | --- |
 | TMDb Official API | Python and pandas | EDA and feature engineering | Leakage-safe evaluation |
 
+## Key Findings
+
+- Collection films show a higher observed success rate than non-collection films in the sampled data; for Action films, the rate is 81.7% for collection films versus 48.5% for non-collection films.
+- Release breadth is associated with different observed success rates: 28.6% for films released in 0–5 markets versus 77.7% for films released in more than 30 markets.
+- The missing-data audit found budget missing in 32.9% of collected records and revenue missing in 32.3%, so the financial-success label could be constructed only for the subset with the required fields (1,646 of 2,597 collected movies).
+- The model reached 0.7195 Macro-F1 and 0.7224 balanced accuracy, meaning pre-release information can meaningfully separate likely successes from failures while remaining short of certain prediction.
+- These are associations in the sampled data, not causal claims; confounding and sample-selection effects remain possible.
+
 ## Analytical question
 
 Within the TMDb 2000–2025 research snapshot, how informative are movie
@@ -27,36 +35,6 @@ is_successful = 0 otherwise
 
 The threshold is an operational criterion defined for this study. `revenue`
 constructs the label and is never used as a model input.
-
-## Workflow
-
-```mermaid
-flowchart LR
-    A["TMDb Official API"] --> B["Data collection"]
-    B --> C["Raw TMDb snapshot"]
-    C --> D["Cleaning and validation"]
-    D --> E["Modeling cohort"]
-    E --> F["EDA and feature engineering"]
-    F --> G["XGBoost"]
-    G --> H["Nested evaluation and reporting"]
-```
-
-The workflow comprises data acquisition, validation, exploratory analysis,
-feature engineering, predictive evaluation, and reporting. Row-level TMDb
-files remain local; the repository tracks source code, aggregate tables,
-figures, model artifacts, and validation checks.
-
-## Data and scope
-
-The collection contains up to 100 popular, non-adult, non-video films per year
-from 2000 through 2025. The modeling cohort contains 1,646 films with valid
-budget, revenue, runtime, release date, and target values. The two classes are
-477 unsuccessful films and 1,169 successful films.
-
-The only source used for the final analysis is the TMDb Official API. Popularity,
-ratings, vote counts, profit, ROI, and revenue-derived variables are excluded
-from the predictors. See [data sources and collection scope](docs/data_sources.md)
-for endpoint and distribution details.
 
 ## Exploratory analysis
 
@@ -93,13 +71,41 @@ The correlation table reports the largest basic associations with the label as
 `release_event_count` (ρ = 0.192). The full table is
 [`pre_release_spearman.csv`](reports/tables/pre_release_spearman.csv).
 
+## Workflow
+
+```mermaid
+flowchart LR
+    A["TMDb Official API"] --> B["Data collection"]
+    B --> C["Raw TMDb snapshot"]
+    C --> D["Cleaning and validation"]
+    D --> E["Modeling cohort"]
+    E --> F["EDA and feature engineering"]
+    F --> G["XGBoost"]
+    G --> H["Nested evaluation and reporting"]
+```
+
+The workflow comprises data acquisition, validation, exploratory analysis,
+feature engineering, predictive evaluation, and reporting. Row-level TMDb
+files remain local; the repository tracks source code, aggregate tables,
+figures, model artifacts, and validation checks.
+
+## Data and scope
+
+The collection contains up to 100 popular, non-adult, non-video films per year
+from 2000 through 2025. The modeling cohort contains 1,646 films with valid
+budget, revenue, runtime, release date, and target values. The two classes are
+477 unsuccessful films and 1,169 successful films.
+
+The only source used for the final analysis is the TMDb Official API. Popularity,
+ratings, vote counts, profit, ROI, and revenue-derived variables are excluded
+from the predictors. See [data sources and collection scope](docs/data_sources.md)
+for endpoint and distribution details.
+
 ## Predictive evaluation
 
 The reference configuration is XGBoost with metadata, TMDb enrichment, and
 time-aware franchise-history features within the defined pre-release scope.
-Evaluation uses 5 outer and 4 inner stratified folds. All imputation, encoding,
-feature construction, tuning, and threshold selection are restricted to the
-corresponding training or inner-validation data.
+Nested evaluation and its leakage controls are documented in [XGBoost results](docs/xgboost_results.md); the out-of-sample summary below is unchanged.
 
 ![Official XGBoost nested outer-OOF performance summary](reports/figures/xgboost_performance_summary.png)
 
