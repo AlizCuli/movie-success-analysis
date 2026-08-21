@@ -14,6 +14,14 @@ classifier without using post-release predictors.
 | --- | --- | --- | --- |
 | TMDb Official API | Python and pandas | EDA and feature engineering | Leakage-safe evaluation |
 
+## Key Findings
+
+- Collection films show a higher observed success rate than non-collection films in the sampled data; for Action films, the observed rate is 81.7% for collection films versus 48.5% for non-collection films. This is a descriptive association, not evidence that joining a franchise causes success.
+- Release breadth is associated with different observed success rates: 28.6% for films released in 0–5 markets versus 77.7% for films reaching more than 30 markets. This market-reach signal could support early release-strategy analysis, but it is not causal.
+- The missing-data audit found budget missing in 32.9% of collected records and revenue missing in 32.3%, so the financial-success label could be constructed only for the subset with the required fields (1,646 of 2,597 collected movies).
+- The pre-release feature set provides useful signal for separating likely financial successes from failures: 0.7195 Macro-F1 and 0.7224 balanced accuracy. It is not a stand-alone financial decision tool.
+- These are associations in the sampled data, not causal claims; confounding and sample-selection effects remain possible.
+
 ## Analytical question
 
 Within the TMDb 2000–2025 research snapshot, how informative are movie
@@ -27,24 +35,6 @@ is_successful = 0 otherwise
 
 The threshold is an operational criterion defined for this study. `revenue`
 constructs the label and is never used as a model input.
-
-## Workflow
-
-```mermaid
-flowchart LR
-    A["TMDb Official API"] --> B["Data collection"]
-    B --> C["Raw TMDb snapshot"]
-    C --> D["Cleaning and validation"]
-    D --> E["Modeling cohort"]
-    E --> F["EDA and feature engineering"]
-    F --> G["XGBoost"]
-    G --> H["Nested evaluation and reporting"]
-```
-
-The workflow comprises data acquisition, validation, exploratory analysis,
-feature engineering, predictive evaluation, and reporting. Row-level TMDb
-files remain local; the repository tracks source code, aggregate tables,
-figures, model artifacts, and validation checks.
 
 ## Data and scope
 
@@ -66,24 +56,30 @@ The figures describe the sampled snapshot and do not establish causal effects.
 
 ![Missingness in core TMDb fields and class balance](reports/figures/dataset_overview.png)
 
-Budget and revenue are missing in 32.9% and 32.3% of collected records. These
-fields determine whether the financial-success label can be constructed.
+Budget and revenue are missing in 32.9% and 32.3% of collected records. Because
+both fields are required to construct the project-defined target, this data-quality
+issue reduces the usable analytical cohort from 2,597 collected movies to 1,646
+modeling observations.
 
 ### Genre and collection patterns
 
 ![Observed success rate by genre and collection status](reports/figures/success_by_genre_collection.png)
 
-Collection films exhibit higher observed success rates than non-collection films
-in the sampled genre groups. For example, Action is 81.7% for collection films
-versus 48.5% for non-collection films. The underlying counts and rates are
-available in [`success_by_primary_genre_collection.csv`](reports/tables/success_by_primary_genre_collection.csv).
+Comparing primary genre by collection status, collection films exhibit higher
+observed success rates than non-collection films in the sampled genre groups.
+For example, Action is 81.7% for collection films versus 48.5% for non-collection
+films. This provides an interpretable segment signal for further early screening
+analysis, not evidence that collection membership causes financial success. The
+underlying counts and rates are available in
+[`success_by_primary_genre_collection.csv`](reports/tables/success_by_primary_genre_collection.csv).
 
 ### Theatrical release breadth
 
 ![Observed success rate by theatrical release breadth](reports/figures/success_rate_by_theatrical_release_breadth.png)
 
 Observed success rates range from 28.6% in the 0–5-market group to 77.7% in the
-more-than-30-market group. This descriptive difference is supported by
+more-than-30-market group. This market-reach distribution could support further
+release-strategy analysis and is supported by
 [`success_by_theatrical_release_breadth.csv`](reports/tables/success_by_theatrical_release_breadth.csv)
 and should not be interpreted as evidence that market count alone causes
 financial success.
@@ -93,13 +89,30 @@ The correlation table reports the largest basic associations with the label as
 `release_event_count` (ρ = 0.192). The full table is
 [`pre_release_spearman.csv`](reports/tables/pre_release_spearman.csv).
 
+## Workflow
+
+```mermaid
+flowchart LR
+    A["TMDb Official API"] --> B["Data collection"]
+    B --> C["Raw TMDb snapshot"]
+    C --> D["Cleaning and validation"]
+    D --> E["Modeling cohort"]
+    E --> F["EDA and feature engineering"]
+    F --> G["XGBoost"]
+    G --> H["Nested evaluation and reporting"]
+```
+
+The workflow comprises data acquisition, validation, exploratory analysis,
+feature engineering, predictive evaluation, and reporting. Row-level TMDb
+files remain local; the repository tracks source code, aggregate tables,
+figures, model artifacts, and validation checks.
+
 ## Predictive evaluation
 
 The reference configuration is XGBoost with metadata, TMDb enrichment, and
 time-aware franchise-history features within the defined pre-release scope.
-Evaluation uses 5 outer and 4 inner stratified folds. All imputation, encoding,
-feature construction, tuning, and threshold selection are restricted to the
-corresponding training or inner-validation data.
+The official result is a leakage-safe pooled outer-OOF evaluation; detailed
+nested-CV mechanics and controls are documented in [XGBoost results](docs/xgboost_results.md).
 
 ![Official XGBoost nested outer-OOF performance summary](reports/figures/xgboost_performance_summary.png)
 
@@ -126,7 +139,7 @@ The complete benchmark and interpretation are documented in [XGBoost results](do
 ## Repository structure
 
 ```text
-movie-success-analysis/
+Movie-Financial-Success-Analysis/
 |-- data/             # Local data structure; row-level files are excluded
 |-- docs/             # Methodology, findings, experiments, and limitations
 |-- models/           # Official XGBoost bundle and manifest
@@ -143,8 +156,8 @@ movie-success-analysis/
 Use Python 3.14 and install the pinned dependencies in an isolated environment.
 
 ```bash
-git clone https://github.com/AlizCules/Movie-Success-Analysis.git
-cd Movie-Success-Analysis
+git clone https://github.com/AlizCules/Movie-Financial-Success-Analysis.git
+cd Movie-Financial-Success-Analysis
 python -m venv .venv
 ```
 
